@@ -80,3 +80,55 @@ F* programs compile, by default, to OCaml.  Various fragments of F* can also be
 extracted to F#, C or WebAssembly by a tool called KaRaMeL, or to assmebly
 using the Vale toolchain.")
     (license license:asl2.0)))
+
+(define-public karamel
+  ;; From `git describe --tags'.
+  (let ((commit "9e3c8dfb0e4925be49270e690ad839a7451bdb1a")
+        (revision "867"))
+    (package
+      (name "karamel")
+      (version (git-version "1.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/FStarLang/karamel")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1q7sdv4l0mkvka0h52y0zjsyr7xwxr7al06xh7xncz84d2k04nc0"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list #:tests? #f ;; TODO.
+             #:make-flags #~(list (string-append "CC=" #$(cc-for-target))
+                                  (string-append "PREFIX=" #$output))
+             #:phases
+             #~(modify-phases %standard-phases
+                 ;; Avoid using git to create version file.
+                 (replace 'configure
+                   (lambda _
+                     (with-output-to-file "lib/Version.ml"
+                       (lambda ()
+                         (format #t "let version = ~s~%" #$version)))))
+                 (add-after 'install 'wrap-program
+                   (lambda _
+                     (wrap-program (string-append #$output "/bin/krml")
+                       `("FSTAR_HOME" = (,#$(this-package-input "fstar")))))))))
+      (native-inputs
+       (list dune
+             fstar
+             ocaml
+             ocaml-findlib
+             ocaml-menhir
+             which))
+      (propagated-inputs
+       (list ocaml-fix
+             ocaml-uucp
+             ocaml-visitors
+             ocaml-wasm))
+      (inputs (list fstar))
+      (home-page "https://github.com/FStarLang/karamel")
+      (synopsis "Extract F* programs to C")
+      (description "KaRaMeL (formerly known as KReMLin) is a tool to extract
+F* code to readable C code.")
+      (license license:asl2.0))))
