@@ -56,3 +56,43 @@ name.")
     (description "This package provides a OCaml library, @code{process}, that
 makes it easy to use commands as functions.")
     (license license:isc)))
+
+(define-public ocaml-stdint
+  (package
+    (name "ocaml-stdint")
+    (version "0.7.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/andrenth/ocaml-stdint")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0c5l1pbwcvj0ak7fc6adp5jgh83p4bc9qgx4rfnzyc24dn8gllrf"))))
+    (build-system dune-build-system)
+    (arguments
+     (list ;; FIXME: Some tests are failing, see:
+           ;; <https://github.com/andrenth/ocaml-stdint/issues/59>.
+           #:tests? #f))
+    (propagated-inputs (list ocaml-odoc))
+    (native-inputs (list ocaml-qcheck))
+    (home-page "https://github.com/andrenth/ocaml-stdint")
+    (synopsis "Fixed with integer types")
+    (description "The stdint library provides signed and unsigned integer
+types of various fixed widths: 8, 16, 24, 32, 40, 48, 56, 64 and 128 bit.
+
+This interface is similar to @code{Int32} and @code{Int64} from the base
+library but provides more functions and constants:
+
+@itemize
+@item Arithmetic and bit-wise operations.
+@item Constants for maximum and minimum values.
+@item Infix operators conversion to and from every other integer type,
+including @code{int}, @code{float} and @code{nativeint}.
+@item Parsing from and conversion to readable strings (binary, octal, decimal,
+hexademical).
+@item Conversion to and from buffers in both big endian and little endian byte
+order.
+@end itemize")
+    (license license:expat)))
