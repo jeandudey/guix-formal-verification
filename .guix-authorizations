@@ -3,6 +3,10 @@
 ;;;
 ;;; This is the list of OpenPGP keys currently authorized to sign commits in
 ;;; this repository.
+;;;
+;;; Usage:
+;;;
+;;; guix git authenticate 4a9a64b86dcb9f89f57dc4cb3be59fe851851163 '9D54 3ADF 6E90 348C C606  90A9 6279 AEC2 0A95 24EC'
 
 (authorizations
  (version 0)
