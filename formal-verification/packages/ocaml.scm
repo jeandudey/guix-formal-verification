@@ -96,3 +96,25 @@ hexademical).
 order.
 @end itemize")
     (license license:expat)))
+
+(define-public ocaml-visitors
+  (package
+    (name "ocaml-visitors")
+    (version "20210608")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.inria.fr/fpottier/visitors")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1p75x5yqwbwv8yb2gz15rfl3znipy59r45d1f4vcjdghhjws6q2a"))))
+    (build-system dune-build-system)
+    (propagated-inputs (list ocaml-ppxlib ocaml-ppx-deriving ocaml-result))
+    (home-page "https://gitlab.inria.fr/fpottier/visitors")
+    (synopsis "Traverse and transform data structures")
+    (description "This package provides a library to traverse and transform
+data structures in OCaml by extending @code{ppx_deriving} which generates
+object-oriented visitors for traversing and transforming data structures.")
+    (license license:lgpl2.1)))
