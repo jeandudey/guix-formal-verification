@@ -17,6 +17,104 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public everparse
+  ;; From `git describe --tags'.
+  (let ((commit "6efeaf4220f391b8c167f6f73c5a602c87d70db7")
+        (revision "961"))
+    (package
+      (name "everparse")
+      (version (git-version "2023.12.08" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/project-everest/everparse")
+                       (commit commit)))
+                (modules '((guix build utils)))
+                (snippet
+                  ;; Contains generated files.
+                  #~(delete-file-recursively "doc/3d-snapshot"))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1bdrxmxa7cxpwym2nv9p0vi5x0gcwg011lkw41yvqbby44vr6x3s"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list #:make-flags
+             #~(list (string-append "KRML_HOME="
+                                    #$(this-package-input "karamel")))
+             #:tests? #f
+             #:test-target "test"
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure)
+                 (add-after 'unpack 'patch-karamel-home
+                   (lambda _
+                     (substitute* (find-files "." "^Makefile.*$")
+                       (("\\$\\(KRML_HOME\\)/krmllib")
+                        "$(KRML_HOME)/lib/krml")
+                       (("\\$\\(KRML_HOME\\)/krml")
+                        "$(KRML_HOME)/bin/krml"))))
+                 (add-after 'patch-karamel-home 'patch-clang-format
+                   (lambda _
+                     (substitute* "src/3d/ocaml/Batch.ml"
+                       (("\"clang-format%s\"")
+                        (string-append
+                          "\""
+                          #$(file-append (this-package-input "clang")
+                                         "bin/clang-format")
+                          "%s\"")))))
+                 (add-after 'patch-karamel-home 'patch-make
+                   (lambda _
+                     (substitute* "src/3d/Main.fst"
+                       (("\"make\"")
+                        (string-append
+                          "\""
+                          #$(file-append (this-package-input "make")
+                                         "bin/make")
+                          "\"")))))
+                 (replace 'install
+                   (lambda _
+                     (let ((bin (string-append #$output "/bin"))
+                           (fstar (string-append #$output "/lib/fstar")))
+                       (mkdir-p bin)
+                       (mkdir-p (dirname fstar))
+
+                       (install-file "bin/qd.exe" bin)
+                       (install-file "bin/3d.exe" bin)
+
+                       (copy-recursively "src/lowparse" fstar))))
+                 (add-after 'install 'wrap-program
+                   (lambda _
+                     (wrap-program (string-append #$output "/bin/3d.exe")
+                       `("FSTAR_HOME" = (,#$(this-package-input "fstar")))
+                       `("KRML_HOME" = (,#$(this-package-input "karamel")))
+                       `("EVERPARSE_HOME" = (,#$output))))))))
+      (native-inputs
+       (list dune
+             fstar
+             ocaml
+             ocaml-findlib
+             ocaml-menhir
+             which))
+      (inputs
+       (list clang
+             fstar
+             karamel
+             gnu-make
+             ocaml-batteries
+             ocaml-hex
+             ocaml-re
+             ocaml-sha
+             ocaml-sexplib))
+      (home-page "https://project-everest.github.io/everparse/")
+      (synopsis "Generate parsers of binary formats")
+      (description "This package provides EverParse, a tool to generate
+verified secure parsers from @acronym{DSL, Domain Specific Language} format
+specification languages.  It consists of LowParse, a verified combinator
+library, and QuackyDucky, an untrusted message format specification language
+compiler.")
+      (license license:asl2.0))))
+
 (define-public fstar
   (package
     (name "fstar")
