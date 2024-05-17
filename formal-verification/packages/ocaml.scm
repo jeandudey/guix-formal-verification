@@ -3,6 +3,7 @@
 
 (define-module (formal-verification packages ocaml)
   #:use-module (gnu packages ocaml)
+  #:use-module (gnu packages python)
   #:use-module (guix build-system dune)
   #:use-module (guix build-system ocaml)
   #:use-module (guix gexp)
@@ -118,3 +119,42 @@ order.
 data structures in OCaml by extending @code{ppx_deriving} which generates
 object-oriented visitors for traversing and transforming data structures.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-wasm
+  (package
+    (name "ocaml-wasm")
+    (version "2.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/WebAssembly/spec")
+                     (commit (string-append "opam-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1nyfpylky6pi4c9nna5r31zrkccl1lynpzcm9d8nrn52icq3rsp5"))))
+    (build-system ocaml-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-before 'build 'change-directory
+                 (lambda _
+                   (chdir "interpreter"))))))
+    (native-inputs
+     (list ocaml-findlib
+           ocamlbuild
+           python-minimal))
+    (home-page "https://github.com/WebAssembly/spec")
+    (synopsis "WebAssembly reference interpreter")
+    (description "This package provides an official WebAssembly reference
+interpreter.  The interpreter can:
+
+@itemize
+@item Parse, decode and validate modules in text or binary formats.
+@item Execute scripts with module definitions, invocations and assertions.
+@item Convert between text and binary format in both directions.
+@item Export test scripts to self-contained JavaScript test cases.
+@item Run as an interactive interpreter.
+@end itemize")
+    (license license:asl2.0)))
