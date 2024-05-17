@@ -2,7 +2,10 @@
 ;;; SPDX-License-Identifier: GPL-3.0-or-later
 
 (define-module (formal-verification packages ocaml)
+  #:use-module (gnu packages ocaml)
   #:use-module (guix build-system dune)
+  #:use-module (guix build-system ocaml)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
@@ -29,3 +32,27 @@
 The @code{MEMTRACE} environment variable can be used to set the trace file
 name.")
     (license license:expat)))
+
+(define-public ocaml-process
+  (package
+    (name "ocaml-process")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/dsheets/ocaml-process")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0m1ldah5r9gcq09d9jh8lhvr77910dygx5m309k1jm60ah9mdcab"))))
+    (build-system ocaml-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list ocaml-alcotest ocaml-findlib ocamlbuild))
+    (home-page "https://github.com/dsheets/ocaml-process")
+    (synopsis "Use commands as functions")
+    (description "This package provides a OCaml library, @code{process}, that
+makes it easy to use commands as functions.")
+    (license license:isc)))
