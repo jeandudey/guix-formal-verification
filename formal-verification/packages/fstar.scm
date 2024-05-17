@@ -83,8 +83,8 @@ using the Vale toolchain.")
 
 (define-public karamel
   ;; From `git describe --tags'.
-  (let ((commit "9e3c8dfb0e4925be49270e690ad839a7451bdb1a")
-        (revision "867"))
+  (let ((commit "5dac5b6ef91c63c61d1ebe08071b32fae7e01d06")
+        (revision "869"))
     (package
       (name "karamel")
       (version (git-version "1.0.0" revision commit))
@@ -96,7 +96,7 @@ using the Vale toolchain.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1q7sdv4l0mkvka0h52y0zjsyr7xwxr7al06xh7xncz84d2k04nc0"))))
+                  "081l6bin6dllszwz4kj6ing6r5sbvf6w28y75mam9qj2ac0zxwi7"))))
       (build-system gnu-build-system)
       (arguments
        (list #:tests? #f ;; TODO.
