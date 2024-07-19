@@ -1,4 +1,4 @@
-From 88eb9b1c12bffcdea37e75585d4727a97c012ed6 Mon Sep 17 00:00:00 2001
+From 09437390f324d1f1a19de75c38c5bd4e7cec3f0b Mon Sep 17 00:00:00 2001
 From: Jean-Pierre De Jesus DIAZ <me@jeandudey.tech>
 Date: Fri, 19 Jul 2024 13:47:56 +0200
 Subject: [PATCH] Allow building with external coq-regexp.
@@ -15,8 +15,8 @@ Subject: [PATCH] Allow building with external coq-regexp.
  ShortestLen.v      |  1 -
  ShortestLenSimpl.v |  1 -
  SubLexeme.v        |  2 --
- coqlex.ml          | 11 -----------
- 12 files changed, 2 insertions(+), 32 deletions(-)
+ coqlex.ml          | 29 +++++++++--------------------
+ 12 files changed, 11 insertions(+), 41 deletions(-)
 
 diff --git a/CoqLexLexer.v b/CoqLexLexer.v
 index 589b091..bc07eb9 100644
@@ -171,7 +171,7 @@ index 94eec8b..3227748 100644
  Require Import Lia.
  Require Import MatchLenSimpl RegexpSimpl.
 diff --git a/coqlex.ml b/coqlex.ml
-index 659ac80..abbf408 100644
+index 659ac80..19023e2 100644
 --- a/coqlex.ml
 +++ b/coqlex.ml
 @@ -292,7 +292,6 @@ let rec printlist f lst  = match lst with
@@ -182,10 +182,19 @@ index 659ac80..abbf408 100644
  Require Import LexerDefinition RValues RegExp.Definitions RegExp.Char List CoqLexUtils SubLexeme RegexpSimpl.
  Require Import String.
  Import ListNotations.
-@@ -573,16 +572,6 @@ let () =
- 				file_copy (Filename.concat prog_dirname "ShortestLen.vo") (Filename.concat inputfile_dirname "ShortestLen.vo");
- 				file_copy (Filename.concat prog_dirname "RegexpSimpl.vo") (Filename.concat inputfile_dirname "RegexpSimpl.vo");
- 				file_copy (Filename.concat prog_dirname "SubLexeme.vo") (Filename.concat inputfile_dirname "SubLexeme.vo");
+@@ -564,25 +563,15 @@ let () =
+ 				    close_out out_channel
+ 				);
+ 				Format.printf "Copying coq files@.";
+-				file_copy (Filename.concat prog_dirname "LexerDefinition.vo") (Filename.concat inputfile_dirname "LexerDefinition.vo");
+-				file_copy (Filename.concat prog_dirname "CoqLexUtils.vo") (Filename.concat inputfile_dirname "CoqLexUtils.vo");
+-				file_copy (Filename.concat prog_dirname "RValues.vo") (Filename.concat inputfile_dirname "RValues.vo");
+-				file_copy (Filename.concat prog_dirname "MatchLenSimpl.vo") (Filename.concat inputfile_dirname "MatchLenSimpl.vo");
+-				file_copy (Filename.concat prog_dirname "MatchLen.vo") (Filename.concat inputfile_dirname "MatchLen.vo");
+-				file_copy (Filename.concat prog_dirname "ShortestLenSimpl.vo") (Filename.concat inputfile_dirname "ShortestLenSimpl.vo");
+-				file_copy (Filename.concat prog_dirname "ShortestLen.vo") (Filename.concat inputfile_dirname "ShortestLen.vo");
+-				file_copy (Filename.concat prog_dirname "RegexpSimpl.vo") (Filename.concat inputfile_dirname "RegexpSimpl.vo");
+-				file_copy (Filename.concat prog_dirname "SubLexeme.vo") (Filename.concat inputfile_dirname "SubLexeme.vo");
 -				let inputfile_lib_dirname = Filename.concat inputfile_dirname "RegExpLib" in
 -				create_directory inputfile_lib_dirname;
 -				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Boolean.vo") (Filename.concat inputfile_lib_dirname "Boolean.vo");
@@ -196,6 +205,15 @@ index 659ac80..abbf408 100644
 -				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Definitions.vo") (Filename.concat inputfile_lib_dirname "Definitions.vo");
 -				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "RegExp.vo") (Filename.concat inputfile_lib_dirname "RegExp.vo");
 -				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Utility.vo") (Filename.concat inputfile_lib_dirname "Utility.vo");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/LexerDefinition.v") (Filename.concat inputfile_dirname "LexerDefinition.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/CoqLexUtils.v") (Filename.concat inputfile_dirname "CoqLexUtils.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/RValues.v") (Filename.concat inputfile_dirname "RValues.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/MatchLenSimpl.v") (Filename.concat inputfile_dirname "MatchLenSimpl.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/MatchLen.v") (Filename.concat inputfile_dirname "MatchLen.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/ShortestLenSimpl.v") (Filename.concat inputfile_dirname "ShortestLenSimpl.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/ShortestLen.v") (Filename.concat inputfile_dirname "ShortestLen.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/RegexpSimpl.v") (Filename.concat inputfile_dirname "RegexpSimpl.v");
++				file_copy (Filename.concat prog_dirname "../share/CoqlexLib/SubLexeme.v") (Filename.concat inputfile_dirname "SubLexeme.v");
  				Format.printf "-----------------end of log@.";
  				Format.printf "The lexer generation has been successfully executed in %s@." inputfile_dirname; 
  				if not !ignore_main then

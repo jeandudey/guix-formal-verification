@@ -46,8 +46,17 @@
                  (delete 'configure)
                  (replace 'install
                    (lambda _
-                     (let ((bin (string-append #$output "/bin")))
-                       (install-file "coqlex" bin)))))))
+                     (let ((CoqlexLib (string-append #$output "/share/CoqlexLib"))
+                           (bin (string-append #$output "/bin")))
+                       (install-file "coqlex" bin)
+
+                       (mkdir-p CoqlexLib)
+                       (for-each (lambda (file)
+                                   (install-file file CoqlexLib))
+                                 '("CoqLexUtils.v" "LexerDefinition.v"
+                                   "MatchLen.v" "MatchLenSimpl.v" "RValues.v"
+                                   "RegexpSimpl.v" "ShortestLen.v"
+                                   "ShortestLenSimpl.v" "SubLexeme.v"))))))))
       (native-inputs (list coq ocaml ocaml-menhir))
       (inputs (list coq-menhirlib coq-regexp))
       (home-page "https://gitlab.inria.fr/wouedrao/coqlex")
