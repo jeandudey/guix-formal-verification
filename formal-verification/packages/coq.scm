@@ -24,6 +24,11 @@
                        (url "https://gitlab.inria.fr/wouedrao/coqlex")
                        (commit commit)))
                 (file-name (git-file-name name version))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; Remove bundled coq-regexp. We provide it as a package
+                 ;; with the patches from Coqlex.
+                 #~(delete-file-recursively "regexp_opt"))
                 (sha256
                  (base32
                   "11xzsg0ay1g89lfzrl9f3h40cfy84kwligxbr8xnl82l511wadhr"))
