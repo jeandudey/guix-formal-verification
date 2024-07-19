@@ -1,4 +1,4 @@
-From 8b3014d564e33643788fbafd98696c7b0467a9e2 Mon Sep 17 00:00:00 2001
+From 0c7ca9c767b14c0fcd4f9fd566113dec94cb0e2c Mon Sep 17 00:00:00 2001
 From: Jean-Pierre De Jesus DIAZ <me@jeandudey.tech>
 Date: Fri, 19 Jul 2024 13:47:56 +0200
 Subject: [PATCH] Allow building with external coq-regexp.
@@ -15,7 +15,8 @@ Subject: [PATCH] Allow building with external coq-regexp.
  ShortestLen.v      | 1 -
  ShortestLenSimpl.v | 1 -
  SubLexeme.v        | 2 --
- 11 files changed, 2 insertions(+), 21 deletions(-)
+ coqlex.ml          | 1 -
+ 12 files changed, 2 insertions(+), 22 deletions(-)
 
 diff --git a/CoqLexLexer.v b/CoqLexLexer.v
 index 589b091..bc07eb9 100644
@@ -169,6 +170,18 @@ index 94eec8b..3227748 100644
  Require Import RegExp.Definitions RegExp.Boolean RegExp.Concat.
  Require Import Lia.
  Require Import MatchLenSimpl RegexpSimpl.
+diff --git a/coqlex.ml b/coqlex.ml
+index 659ac80..109631d 100644
+--- a/coqlex.ml
++++ b/coqlex.ml
+@@ -292,7 +292,6 @@ let rec printlist f lst  = match lst with
+ (*** Code generation - Printing a vl file ***)
+ let codeGenerate f (((header, reg_def), list_of_group), trailler) filename_bn = Format.fprintf f {|%s
+ 
+-Add LoadPath "RegExpLib" as RegExp.
+ Require Import LexerDefinition RValues RegExp.Definitions RegExp.Char List CoqLexUtils SubLexeme RegexpSimpl.
+ Require Import String.
+ Import ListNotations.
 -- 
 2.45.2
 
