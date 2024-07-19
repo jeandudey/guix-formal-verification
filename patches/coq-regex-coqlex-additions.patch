@@ -1,0 +1,572 @@
+From 1565eaffca52c11da6707200d73541a4782ae552 Mon Sep 17 00:00:00 2001
+From: Jean-Pierre De Jesus DIAZ <me@jeandudey.tech>
+Date: Fri, 19 Jul 2024 13:26:08 +0200
+Subject: [PATCH] Coqlex additions.
+
+---
+ Boolean.v     |  27 +++---
+ Char.v        | 259 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ Definitions.v |  36 +++++--
+ Includes.v    |  11 ++-
+ RegExp.v      |  14 +--
+ Star.v        |   6 +-
+ description   |   8 +-
+ 7 files changed, 322 insertions(+), 39 deletions(-)
+
+diff --git a/Boolean.v b/Boolean.v
+index 059da41..7d72005 100644
+--- a/Boolean.v
++++ b/Boolean.v
+@@ -36,8 +36,8 @@ Add Parametric Morphism : Or with
+ signature re_eq ==> re_eq ==> re_eq as Or_morphism.
+ Proof.
+   intros x y H x0 y0 H0.  unfold re_eq in *.  intro s.
+-  generalize dependent x.  generalize dependent y. 
+-  generalize dependent x0. generalize dependent y0. 
++  generalize dependent x.  generalize dependent y.
++  generalize dependent x0. generalize dependent y0.
+   induction s.
+     (* s = "" *)
+     intros y0 x0 H0 y x H.  specialize (H0 ""%string).  specialize (H ""%string).
+@@ -64,20 +64,23 @@ Proof.
+       intros s0.  repeat rewrite <- derivation.  eapply H.
+ Qed.
+ 
+-Add Parametric Morphism : Not with
+-signature re_eq ==> re_eq as Not_morphism.
++Add Parametric Morphism : Minus with
++signature re_eq ==> re_eq ==> re_eq as Minus_morphism.
+ Proof.
+-  intros x y H.  unfold re_eq in *.  intros s.
+-  generalize dependent x. generalize dependent y. 
++  intros x y H x0 y0 H0.  unfold re_eq in *.  intros s.
++  generalize dependent x.  generalize dependent y.
++  generalize dependent x0. generalize dependent y0.
+   induction s.
+     (* s = "" *)
+-    intros y x H.  specialize (H ""%string).  simpl in *.  rewrite <- H.  reflexivity.
++    intros y0 x0 H0 y x H.  specialize (H0 ""%string).  specialize (H ""%string).
++    simpl in *.  rewrite <- H0.  rewrite <- H.  reflexivity.
+     (* s = String a s *)
+-    simpl.  intros y x H.  eapply IHs.
+-    intros s0.  repeat rewrite <- derivation.  eapply H.
++    simpl.  intros y0 x0 H0 y x H.  eapply IHs.
++      intros s0.  repeat rewrite <- derivation.  eapply H0.
++      intros s0.  repeat rewrite <- derivation.  eapply H.
+ Qed.
+ 
+-(** [matches] is a homomorphism from [RegExp] to bool for [And], [Or], and [Not]. *)
++(** [matches] is a homomorphism from [RegExp] to bool for [And], [Or], and [Minus]. *)
+ 
+ Lemma matches_Or : forall s r r',  r || r' ~= s = ((r ~= s) || (r' ~= s))%bool.
+ Proof.
+@@ -93,7 +96,7 @@ Proof.
+     simpl.  intros.  eapply IHs.
+ Qed.
+ 
+-Lemma matches_Not : forall s r,  (Not r) ~= s = negb (r ~= s).
++Lemma matches_Minus : forall s r r',  matches (Minus r r') s = ((r ~= s) && (negb (r' ~= s)))%bool.
+ Proof.
+   induction s.
+     simpl.  reflexivity.
+@@ -101,7 +104,7 @@ Proof.
+ Qed.
+ 
+ (** ** Axioms for [Or] *)
+-(** Commutativity and associativity of [Or] and [And]. *)
++(** Commutativity and associativity of [Or] and [And] [Minus]. *)
+ 
+ Lemma Or_comm_s : forall s r r', (r || r') ~= s = (r' || r) ~= s.
+ Proof.
+diff --git a/Char.v b/Char.v
+index 7490694..9c03447 100644
+--- a/Char.v
++++ b/Char.v
+@@ -5,8 +5,9 @@ Require Export RegExp.Utility.
+ Require Export RegExp.Definitions.
+ Require Export RegExp.Boolean.
+ Require Export RegExp.Concat.
++Require Import Lia.
+ 
+-Unset Standard Proposition Elimination Names.
++(* Unset Standard Proposition Elimination Names. *)
+ 
+ (** ** [Char] *)
+ 
+@@ -18,6 +19,29 @@ Proof.
+     elim n. auto.
+ Qed.
+ 
++Lemma AnyChar_true : forall c, AnyChar ~== (String c ""%string).
++Proof.
++  intros. simpl. auto.
++Qed.
++
++Lemma CharExcept_true : forall c c', c<> c' -> CharExcept c ~== (String c' ""%string).
++Proof.
++  intros c c' H.  simpl.
++  destruct(ascii_dec c c'); simpl.
++    auto.
++    auto.
++Qed.
++
++Lemma CharRange_true : forall l h c, ((leb l c) && (leb c h))%bool = true -> (CharRange l h) ~== (String c ""%string) .
++Proof.
++  intros.  simpl. rewrite H. simpl. auto.
++Qed.
++
++Lemma CharRangeExcept_true : forall l h c, ((leb l c) && (leb c h))%bool = false -> (CharRangeExcept l h) ~== (String c ""%string) .
++Proof.
++  intros.  simpl. rewrite H. simpl. auto.
++Qed.
++
+ Lemma Char_false : forall s c, s <> (String c ""%string) -> (Char c) ~!= s.
+ Proof.
+   induction s.
+@@ -31,20 +55,251 @@ Proof.
+         eapply Empty_false.
+ Qed.
+ 
++Lemma CharExcept_false : forall s c, s = ""%string \/ (exists s', s = (String c s')) \/ (exists c' c'' s', s = (String c' (String c'' s')))  -> (CharExcept c) ~!= s.
++Proof.
++intros.
++destruct H.
++rewrite H.
++simpl; auto.
++destruct H.
++destruct H.
++rewrite H.
++simpl.
++destruct(ascii_dec c c); simpl.
++rewrite Empty_false; auto.
++elim n; auto.
++destruct H.
++destruct H.
++destruct H.
++rewrite H.
++simpl.
++induction (ascii_dec c x); simpl; rewrite Empty_false; auto.
++Qed.
++
++Lemma AnyChar_false : forall s, (forall c, s <> (String c ""%string)) -> AnyChar ~!= s.
++Proof.
++  induction s.
++    intros. simpl. auto.
++    induction s. intros. contradict H. unfold not. intros. apply (H a). auto.
++    simpl. intros. apply Empty_false.
++Qed.
++
++Lemma CharRange_false : forall l h s, (forall c,  ((leb l c) && (leb c h))%bool = true -> s <> (String c ""%string)) -> (CharRange l h) ~!= s.
++Proof.
++  induction s.
++    intros. simpl. auto.
++    induction s. intros. case_eq (((l <=? a)%char && (a <=? h)%char)%bool).
++      intros. assert (D := H a H0). contradiction.
++      simpl. intros. rewrite H0. simpl. auto.
++    intros. simpl. induction (((l <=? a)%char && (a <=? h)%char)%bool).
++      simpl. apply Empty_false.
++      simpl. apply Empty_false.
++Qed.
++
++Lemma CharRangeExcept_false : forall l h s, (forall c,  ((leb l c) && (leb c h))%bool = false -> s <> (String c ""%string)) -> (CharRangeExcept l h) ~!= s.
++Proof.
++  induction s.
++    intros. simpl. auto.
++    induction s. intros. simpl. case_eq (((leb l a) && (leb a h))%bool).
++      simpl. auto.
++      intros. assert (D := H a H0). contradiction.
++    intros. simpl. induction (((leb l a) && (leb a h))%bool).
++      simpl. apply Empty_false.
++      simpl. apply Empty_false.
++Qed.
++
++
+ Add Parametric Morphism : Char with
+ signature ascii_eq ==> re_eq as Char_mor.
+ Proof.
+   intros x y Hxy.  destruct Hxy.  setoid_reflexivity.
+ Qed.
+ 
++Add Parametric Morphism : CharExcept with
++signature ascii_eq ==> re_eq as CharExcept_mor.
++Proof.
++  intros x y Hxy.  destruct Hxy.  setoid_reflexivity.
++Qed.
++
++Add Parametric Morphism : CharRange with
++signature ascii_eq ==> ascii_eq ==> re_eq as CharRange_mor.
++Proof.
++  intros x y Hxy x0 y0 Hx0y0.  destruct Hxy.  destruct Hx0y0.  setoid_reflexivity.
++Qed.
++
++Add Parametric Morphism : CharRangeExcept with
++signature ascii_eq ==> ascii_eq ==> re_eq as CharRangeExcept_mor.
++Proof.
++  intros x y Hxy x0 y0 Hx0y0.  destruct Hxy.  destruct Hx0y0.  setoid_reflexivity.
++Qed.
++
+ Lemma derive_Char_is_id : forall a r, derive a (Char a ++ r) =R= r.
+ Proof.
+-  intros a r.  simpl.  
++  intros a r.  simpl.
+   destruct(ascii_dec a a).
+     setoid_rewrite Cat_left_id.  setoid_reflexivity.
+     elim n.  auto.
+ Qed.
+ 
++Lemma derive_CharExcept_is_id : forall a c r, c <> a -> derive a (CharExcept c ++ r) =R= r.
++Proof.
++  intros a c r H.  simpl.
++  destruct(ascii_dec c a).
++  contradiction H.
++    setoid_rewrite Cat_left_id.  setoid_reflexivity.
++Qed.
++
++Lemma derive_CharRange_is_id : forall l h a r, ((l <=? a)%char && (a <=? h)%char)%bool = true -> derive a ((CharRange l h) ++ r) =R= r.
++Proof.
++  intros a r.  simpl.
++  intros. rewrite H.
++    setoid_rewrite Cat_left_id.  setoid_reflexivity.
++Qed.
++
++Lemma derive_CharRangeExcept_is_id : forall l h a r, ((l <=? a)%char && (a <=? h)%char)%bool = false -> derive a ((CharRangeExcept l h) ++ r) =R= r.
++Proof.
++  intros a r.  simpl.
++  intros. rewrite H.
++    setoid_rewrite Cat_left_id.  setoid_reflexivity.
++Qed.
++
++Lemma derive_AnyChar_is_id : forall a r, derive a (AnyChar ++ r) =R= r.
++Proof.
++  intros a r.  simpl.
++    setoid_rewrite Cat_left_id.  setoid_reflexivity.
++Qed.
++
++(** **CharRange and AnyChar equivalence** *)
++Lemma ascii_bounded_0: forall a, ("000" <=? a)%char = true.
++Proof.
++intros.
++unfold leb.
++unfold Ascii.compare.
++rewrite Nnat.N2Nat.inj_compare.
++simpl.
++induction (BinNat.N.to_nat (N_of_ascii a)); auto.
++Qed.
++
++Lemma ascii_bounded_255: forall a, (a <=? "255")%char = true.
++Proof.
++intros.
++unfold leb.
++unfold Ascii.compare.
++assert (D := N_ascii_bounded a).
++rewrite <- BinNat.N.compare_lt_iff in D.
++rewrite Nnat.N2Nat.inj_compare in *.
++apply PeanoNat.Nat.compare_lt_iff in D.
++case_eq (PeanoNat.Nat.compare (BinNat.N.to_nat (N_of_ascii a))
++    (BinNat.N.to_nat (N_of_ascii "255"))); auto.
++intros.
++simpl in H.
++apply PeanoNat.Nat.compare_gt_iff in H.
++lia.
++Qed.
++
++Theorem AnyChar_CharRange_equiv: AnyChar =R= (CharRange "000" "255").
++Proof.
++unfold re_eq.
++induction s.
++simpl.
++auto.
++simpl.
++rewrite ascii_bounded_0.
++rewrite ascii_bounded_255.
++simpl.
++auto.
++Qed.
++
++Theorem CharRange_equiv_empty: forall l h, (h <? l)%char = true -> (CharRange l h) =R= Empty.
++Proof.
++unfold re_eq.
++induction s.
++simpl.
++auto.
++simpl.
++case_eq ((l <=? a)%char); intros; auto.
++case_eq ((a <=? h)%char); intros; auto.
++simpl.
++unfold leb in *.
++unfold ltb in *.
++unfold Ascii.compare in *.
++rewrite Nnat.N2Nat.inj_compare in *.
++assert (PeanoNat.Nat.compare
++        (BinNat.N.to_nat (N_of_ascii h))
++        (BinNat.N.to_nat (N_of_ascii l)) = Lt).
++induction (PeanoNat.Nat.compare
++        (BinNat.N.to_nat (N_of_ascii h))
++        (BinNat.N.to_nat (N_of_ascii l))); auto; inversion H.
++apply PeanoNat.Nat.compare_lt_iff in H2.
++case_eq (PeanoNat.Nat.compare
++         (BinNat.N.to_nat (N_of_ascii l))
++         (BinNat.N.to_nat (N_of_ascii a))); intros.
++apply PeanoNat.Nat.compare_eq_iff in H3.
++case_eq (PeanoNat.Nat.compare
++         (BinNat.N.to_nat (N_of_ascii a))
++         (BinNat.N.to_nat (N_of_ascii h))); intros.
++apply PeanoNat.Nat.compare_eq_iff in H4.
++lia.
++apply PeanoNat.Nat.compare_lt_iff in H4.
++lia.
++rewrite H4 in H1; inversion H1.
++apply PeanoNat.Nat.compare_lt_iff in H3.
++case_eq (PeanoNat.Nat.compare
++         (BinNat.N.to_nat (N_of_ascii a))
++         (BinNat.N.to_nat (N_of_ascii h))); intros.
++apply PeanoNat.Nat.compare_eq_iff in H4.
++lia.
++apply PeanoNat.Nat.compare_lt_iff in H4.
++lia.
++rewrite H4 in H1; inversion H1.
++rewrite H3 in H0; inversion H0.
++Qed.
++
++Theorem CharRangeExcept_equiv_empty: forall l h, (h <? l)%char = true -> (CharRangeExcept l h) =R= AnyChar.
++Proof.
++unfold re_eq.
++induction s.
++simpl.
++auto.
++simpl.
++case_eq ((l <=? a)%char); intros; auto.
++case_eq ((a <=? h)%char); intros; auto.
++simpl.
++unfold leb in *.
++unfold ltb in *.
++unfold Ascii.compare in *.
++rewrite Nnat.N2Nat.inj_compare in *.
++assert (PeanoNat.Nat.compare
++        (BinNat.N.to_nat (N_of_ascii h))
++        (BinNat.N.to_nat (N_of_ascii l)) = Lt).
++induction (PeanoNat.Nat.compare
++        (BinNat.N.to_nat (N_of_ascii h))
++        (BinNat.N.to_nat (N_of_ascii l))); auto; inversion H.
++apply PeanoNat.Nat.compare_lt_iff in H2.
++case_eq (PeanoNat.Nat.compare
++         (BinNat.N.to_nat (N_of_ascii l))
++         (BinNat.N.to_nat (N_of_ascii a))); intros.
++apply PeanoNat.Nat.compare_eq_iff in H3.
++case_eq (PeanoNat.Nat.compare
++         (BinNat.N.to_nat (N_of_ascii a))
++         (BinNat.N.to_nat (N_of_ascii h))); intros.
++apply PeanoNat.Nat.compare_eq_iff in H4.
++lia.
++apply PeanoNat.Nat.compare_lt_iff in H4.
++lia.
++rewrite H4 in H1; inversion H1.
++apply PeanoNat.Nat.compare_lt_iff in H3.
++case_eq (PeanoNat.Nat.compare
++         (BinNat.N.to_nat (N_of_ascii a))
++         (BinNat.N.to_nat (N_of_ascii h))); intros.
++apply PeanoNat.Nat.compare_eq_iff in H4.
++lia.
++apply PeanoNat.Nat.compare_lt_iff in H4.
++lia.
++rewrite H4 in H1; inversion H1.
++rewrite H3 in H0; inversion H0.
++Qed.
++
+ (** ** String *)
+ (** For simplicity, there is no [RegExp] constructor for string; however, the conversion is easy. *)
+ 
+diff --git a/Definitions.v b/Definitions.v
+index 0263000..89882c4 100644
+--- a/Definitions.v
++++ b/Definitions.v
+@@ -6,8 +6,16 @@
+  - [Cat r1 r2] : [r1 ++ r2] matches [s1 ++ s2] iff [r1, r2] match [s1, s2], respectively,
+  - [Or r1 r2] : [r1 || r2] matches [s1] or [s2] iff [r1, r2] match [s1, s2], respectively,
+  - [Star r] : [Star r] matches a zero-or-more times repetition of [s] iff [r] matches [s]; Kleene star $r^{\ast}$ #r*#,
+- - [Not r] : [Not r] matches [s] iff [r] does not match [s],
+- - [And r1 r2] : [And r1 r2] matches [s] iff both [r1, r2] match [s].
++ - [Not r] (removed): [Not r] matches [s] iff [r] does not match [s],
++ - [And r1 r2] : [And r1 r2] matches [s] iff both [r1, r2] match [s]
++
++ (Addition for Coqlex)
++
++ - [AnyChar] : matches any single charaters,
++ - [CharExept c] : matches a single charater that is not [^c],
++ - [CharRange l h] : matches a single charater which ascii code is between [l] and [h] ascii codes,
++ - [CharRangeExcept l h] : matches a single charater which ascii code is not between [l] and [h] ascii codes,
++ - [Minus r1 r2] : [Minus r1 r2] matches [s] iff [r1] matches [s] and [r2] does not match [s].
+ 
+ Though [Not] and [And] are not necessary for regular expression,
+ they would be useful in real use.
+@@ -23,6 +31,7 @@ and [derive] with consistency. *)
+ Require Export RegExp.Utility.
+ Require Export Setoid.
+ Require Export Relation_Definitions.
++Require Export Ascii.
+ 
+ (** ** Definitions *)
+ 
+@@ -33,8 +42,12 @@ Inductive RegExp : Set :=
+ | Cat : RegExp -> RegExp -> RegExp
+ | Or : RegExp -> RegExp -> RegExp
+ | Star : RegExp -> RegExp
+-| Not : RegExp -> RegExp
+-| And : RegExp -> RegExp -> RegExp.
++| And : RegExp -> RegExp -> RegExp
++| AnyChar : RegExp
++| CharExcept : ascii -> RegExp
++| CharRange : ascii -> ascii -> RegExp
++| CharRangeExcept : ascii -> ascii -> RegExp
++| Minus : RegExp -> RegExp -> RegExp.
+ 
+ Notation "a ++ b" := (Cat a b).
+ Notation "a || b" := (Or a b).
+@@ -49,8 +62,12 @@ match re with
+ | Cat r s => (nu r && nu s)%bool
+ | Or r s => (nu r || nu s)%bool
+ | Star r => true
+-| Not r => negb (nu r)
+ | And r s => (nu r && nu s)%bool
++| AnyChar => false
++| CharExcept _ => false
++| CharRange _ _ => false
++| CharRangeExcept _ _ => false
++| Minus r s => (nu r && (negb (nu s)))%bool
+ end.
+ 
+ (** Derivation of [re:RegExp] by [a:ascii]. *)
+@@ -69,8 +86,15 @@ match re with
+   end
+ | Or r s => (derive a r) || (derive a s)
+ | Star r => (derive a r) ++ (Star r) 
+-| Not r => Not (derive a r)
+ | And r s => And (derive a r) (derive a s)
++| AnyChar => Eps
++| CharExcept c => match (ascii_dec c a) with
++ | left _ => Empty
++ | right _ => Eps
++ end
++| CharRange l h => if ((l <=? a)%char && (a <=? h)%char)%bool then Eps else Empty
++| CharRangeExcept l h => if ((l <=? a)%char && (a <=? h)%char)%bool then Empty else Eps
++| Minus r s => Minus (derive a r) (derive a s)
+ end.
+ 
+ Notation "re / a" := (derive a re).
+diff --git a/Includes.v b/Includes.v
+index f118e55..6b39821 100644
+--- a/Includes.v
++++ b/Includes.v
+@@ -1,9 +1,10 @@
+ (** * Coq codes *)
+ (** ** Dependencies *)
+ 
++
+ Require Import Recdef.
+ Require Import Arith.Wf_nat.
+-Require Import Omega.
++Require Import Lia.
+ Require Export RegExp.Utility.
+ Require Export RegExp.Definitions.
+ Require Export RegExp.Boolean.
+@@ -201,10 +202,10 @@ Proof.
+     assert(Hltof: ltof string str_length (s''0 ++ s'')%string s).
+      unfold ltof.  rewrite H01.  rewrite H11.
+      repeat rewrite str_length_append.
+-     cut(str_length s'0 > 0).  intro Hs'0.  omega.
++     cut(str_length s'0 > 0).  intro Hs'0.  lia.
+      induction s'0.
+        elim H12.  auto.  
+-       simpl.  omega.
++       simpl.  lia.
+     assert(Hy: (Star a ++ b) ~== (s''0 ++ s'')).
+       eapply matches_Cat.  auto.  auto.
+     assert(Hy': x ~== (s''0 ++ s'')%string).
+@@ -246,10 +247,10 @@ Proof.
+     assert(Hltof: ltof string str_length (s' ++ s'0)%string s).
+       unfold ltof.  rewrite H01.  rewrite H11.
+       repeat rewrite str_length_append.
+-      cut(str_length s''0 > 0).  intro Hs''0.  omega.
++      cut(str_length s''0 > 0).  intro Hs''0.  lia.
+       induction s''0.  
+         elim H12.  auto.  
+-        simpl.  omega.
++        simpl.  lia.
+     assert(Hy: (b ++ Star a) ~== (s' ++ s'0)).
+       eapply matches_Cat.  auto.  auto.
+     assert(Hy': x ~== (s' ++ s'0)%string).
+diff --git a/RegExp.v b/RegExp.v
+index 1f5144e..9a455ed 100644
+--- a/RegExp.v
++++ b/RegExp.v
+@@ -39,10 +39,10 @@ Elements of [RegExp] satisfy [re_eq] when they give the same matching result to
+ (** * Coq codes *)
+ (** ** Dependencies *)
+ 
+-Require Export RegExp.Utility.
+-Require Export RegExp.Definitions.
+-Require Export RegExp.Boolean.
+-Require Export RegExp.Concat.
+-Require Export RegExp.Star.
+-Require Export RegExp.Includes.
+-Require Export RegExp.Char.
++Require Export Utility.
++Require Export Definitions.
++Require Export Boolean.
++Require Export Concat.
++Require Export Star.
++Require Export Includes.
++Require Export Char.
+diff --git a/Star.v b/Star.v
+index d0fa719..ca874e0 100644
+--- a/Star.v
++++ b/Star.v
+@@ -2,14 +2,14 @@
+ (** ** Dependencies *)
+ 
+ Require Import Recdef.
++Require Import Lia.
+ Require Import Arith.Wf_nat.
+-Require Import Omega.
+ Require Export RegExp.Utility.
+ Require Export RegExp.Definitions.
+ Require Export RegExp.Boolean.
+ Require Export RegExp.Concat.
+ 
+-Unset Standard Proposition Elimination Names.
++(* Unset Standard Proposition Elimination Names. *)
+ 
+ (** ** Lemmas for Star *)
+ 
+@@ -84,7 +84,7 @@ Proof.
+         induction s0.
+           intro H'. elim H'. auto. 
+           simpl. intro H'. intro H''. discriminate H''. 
+-      specialize(Hlen_s s' H12).  omega.
++      specialize(Hlen_s s' H12).  lia.
+     specialize(IHs s'' Hltof r H14).
+     destruct IHs as [ss' [IH1 [IH2 IH3]]].
+     exists (s' :: ss').  split.
+diff --git a/description b/description
+index 6b73611..f916975 100644
+--- a/description
++++ b/description
+@@ -1,11 +1,11 @@
+ Name: RegExp
+-Title: Regular Expression
++Title: Regular Expression (Extended version)
+ Description: The Library RegExp is a Coq library for regular expression. The implementation is based on the Janusz Brzozowski's algorithm ("Derivatives of Regular Expressions", Journal of the ACM 1964).
+ The RegExp library satisfies the axioms of Kleene Algebra.  The proofs are shown in the library. 
+ Keywords: Regular Expression, Kleene Algebra
+ Category: Computer Science/Formal Languages Theory and Automata
+-Author: Takashi Miyamoto
+-Email: tmiya@bu.iij4u.or.jp
+-Homepage: http://study-func-prog.blogspot.com/
++Author: [Original] Takashi Miyamoto, [Extension] Wendlasida Tertius Ouedraogo
++Email: [Original] tmiya@bu.iij4u.or.jp, [Extension] ouedraogo.tertius@gmail.com
++Homepage: [Original] http://study-func-prog.blogspot.com/
+ Require: 
+ License: LGPL
+-- 
+2.45.2
+
