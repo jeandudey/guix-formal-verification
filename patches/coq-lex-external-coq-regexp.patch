@@ -1,0 +1,174 @@
+From 8b3014d564e33643788fbafd98696c7b0467a9e2 Mon Sep 17 00:00:00 2001
+From: Jean-Pierre De Jesus DIAZ <me@jeandudey.tech>
+Date: Fri, 19 Jul 2024 13:47:56 +0200
+Subject: [PATCH] Allow building with external coq-regexp.
+
+---
+ CoqLexLexer.v      | 1 -
+ CoqLexUtils.v      | 2 --
+ Extraction.v       | 1 -
+ LexerDefinition.v  | 2 --
+ Makefile           | 7 ++-----
+ MatchLenSimpl.v    | 2 --
+ RValues.v          | 2 --
+ RegexpSimpl.v      | 2 --
+ ShortestLen.v      | 1 -
+ ShortestLenSimpl.v | 1 -
+ SubLexeme.v        | 2 --
+ 11 files changed, 2 insertions(+), 21 deletions(-)
+
+diff --git a/CoqLexLexer.v b/CoqLexLexer.v
+index 589b091..bc07eb9 100644
+--- a/CoqLexLexer.v
++++ b/CoqLexLexer.v
+@@ -12,7 +12,6 @@
+ 
+ (** * Coqlex generator lexer definition *)
+ 
+-Add LoadPath "regexp_opt" as RegExp.
+ Require Import LexerDefinition RValues.
+ Require Import Parser.
+ Require Import RegExp.Definitions RegExp.Char.
+diff --git a/CoqLexUtils.v b/CoqLexUtils.v
+index ab684b8..9315497 100644
+--- a/CoqLexUtils.v
++++ b/CoqLexUtils.v
+@@ -1,5 +1,3 @@
+-Add LoadPath "regexp_opt" as RegExp.
+-
+ Require Import RegExp.Definitions.
+ Require Import Lia.
+ Require Import MatchLenSimpl.
+diff --git a/Extraction.v b/Extraction.v
+index cd64932..6a0eba9 100644
+--- a/Extraction.v
++++ b/Extraction.v
+@@ -16,7 +16,6 @@
+ Require Coq.extraction.Extraction.
+ Require Import ExtrOcamlBasic.
+ Require Import ExtrOcamlString.
+-Add LoadPath "regexp_opt" as RegExp.
+ Require Import ExtrOcamlNatInt RValues.
+ Require Import RegExp.Char.
+ Require Import Parser LexerDefinition CoqLexLexer CoqLexUtils.
+diff --git a/LexerDefinition.v b/LexerDefinition.v
+index 44edd37..d5f79a9 100644
+--- a/LexerDefinition.v
++++ b/LexerDefinition.v
+@@ -12,8 +12,6 @@
+ 
+ (** * Coqlex election and lexbuf definition *)
+ 
+-Add LoadPath "regexp_opt" as RegExp.
+-
+ Require Import RegExp.Definitions.
+ Require Import Lia.
+ Require Import MatchLenSimpl.
+diff --git a/Makefile b/Makefile
+index 833b877..7973752 100644
+--- a/Makefile
++++ b/Makefile
+@@ -27,14 +27,11 @@ OPTOBJS = $(SOURCES2:.ml=.cmx)
+ COQ_SOURCES1 = $(COQ_SOURCES:.vy=.v)
+ COQ_OBJS = $(COQ_SOURCES1:.v=.vo)
+ 
+-$(EXEC): reg_lib $(COQ_OBJS) coqlex.ml
++$(EXEC): $(COQ_OBJS) coqlex.ml
+ 	@coqc Extraction.v > /dev/null
+ 	ocamlc -w -3 -c $(SOURCES) > /dev/null
+ 	ocamlc -o $(EXEC) $(LIBS) $(OBJS) > /dev/null
+ 
+-reg_lib: regexp_opt
+-	@$(MAKE) -C $^ > /dev/null
+-
+ example_json: $(EXEC)
+ 	@echo "Generating coqlex JSON lexer"
+ 	@./$(EXEC) example/json.vl > /dev/null
+@@ -85,7 +82,7 @@ compare_xml: $(EXEC)
+ .SUFFIXES: .v .vy .vo
+ 
+ .v.vo:
+-	coqc $< -R regexp_opt RegExp
++	coqc $<
+ 
+ .vy.v:
+ 	menhir --coq -v $<
+diff --git a/MatchLenSimpl.v b/MatchLenSimpl.v
+index cd3a4de..3164824 100644
+--- a/MatchLenSimpl.v
++++ b/MatchLenSimpl.v
+@@ -12,8 +12,6 @@
+ 
+ (** * Coqlex implementation of the optimized version of $S_l:$ #Sl:# *)
+ 
+-Add LoadPath "regexp_opt" as RegExp. 
+-
+ Require Import RegExp.Definitions.
+ Require Import RegExp.Utility.
+ Require Import RegexpSimpl.
+diff --git a/RValues.v b/RValues.v
+index fcd2c67..d4eb992 100644
+--- a/RValues.v
++++ b/RValues.v
+@@ -12,8 +12,6 @@
+ 
+ (** * Coqlex usual regexp values *)
+ 
+-Add LoadPath "regexp_opt" as RegExp. 
+-
+ Require Import RegExp.Definitions.
+ Require Import RegExp.Boolean.
+ Require Import RegExp.Char.
+diff --git a/RegexpSimpl.v b/RegexpSimpl.v
+index ed67791..f66e01f 100644
+--- a/RegexpSimpl.v
++++ b/RegexpSimpl.v
+@@ -27,8 +27,6 @@ The Kleene Algebra is an idempotent semiring; therefore for any elements $x, y:$
+ *)
+ 
+ 
+-Add LoadPath "regexp_opt" as RegExp.  
+-
+ Require Import RegExp.Definitions.
+ Require Import RegExp.Boolean.
+ Require Import RegExp.Char.
+diff --git a/ShortestLen.v b/ShortestLen.v
+index ed75552..a1eda48 100644
+--- a/ShortestLen.v
++++ b/ShortestLen.v
+@@ -22,7 +22,6 @@
+     with matches, a verified function returning true if a regex matches a string.
+  *)
+ 
+-Add LoadPath "regexp_opt" as RegExp.
+ Require Import RegExp.Definitions.
+ Require Import RegExp.Boolean.
+ Require Import RegExp.Char.
+diff --git a/ShortestLenSimpl.v b/ShortestLenSimpl.v
+index 0ba71f9..7cd2d0a 100644
+--- a/ShortestLenSimpl.v
++++ b/ShortestLenSimpl.v
+@@ -12,7 +12,6 @@
+ 
+ (** * Coqlex implementation of the optimized version of $S_s:$ #Ss:# *)
+ 
+-Add LoadPath "regexp_opt" as RegExp.
+ Require Import RegExp.Definitions.
+ Require Import RegExp.Utility.
+ Require Import RegexpSimpl.
+diff --git a/SubLexeme.v b/SubLexeme.v
+index 94eec8b..3227748 100644
+--- a/SubLexeme.v
++++ b/SubLexeme.v
+@@ -12,8 +12,6 @@
+ 
+ (** * Coqlex implementation of sublexeme *)
+ 
+-Add LoadPath "regexp_opt" as RegExp.
+-
+ Require Import RegExp.Definitions RegExp.Boolean RegExp.Concat.
+ Require Import Lia.
+ Require Import MatchLenSimpl RegexpSimpl.
+-- 
+2.45.2
+

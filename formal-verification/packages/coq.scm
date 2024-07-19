@@ -12,6 +12,48 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public coq-lex
+  (let ((revision "0")
+        (commit "ded4153e73d71d08de300f226823bf7176949e01"))
+    (package
+      (name "coq-lex")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://gitlab.inria.fr/wouedrao/coqlex")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "11xzsg0ay1g89lfzrl9f3h40cfy84kwligxbr8xnl82l511wadhr"))
+                (patches
+                 (search-patches
+                  "patches/coq-lex-external-coq-regexp.patch"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list #:make-flags
+             #~'("EXEC=coqlex")
+             #:parallel-build? #f ;; Out of order build causes a failure.
+             #:tests? #f ;; No clear way to test.
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure)
+                 (replace 'install
+                   (lambda _
+                     (let ((bin (string-append #$output "/bin")))
+                       (install-file "coqlex" bin)))))))
+      (native-inputs (list coq ocaml ocaml-menhir))
+      (inputs (list coq-menhirlib coq-regexp))
+      (home-page "https://gitlab.inria.fr/wouedrao/coqlex")
+      (synopsis "Formally verified lexical analyzer generator")
+      (description "Coqlex is a formally verified tool for generating
+scanners.  A scanner, sometimes called a tokenizer, is a program which
+recognizes lexical patterns in text.  The coqlex program reads user specified
+files for a description of a scanner to generate.  Coqlex generates a Coq
+source file.")
+      (license license:expat))))
+
 (define-public coq-menhirlib
   (package
     (inherit ocaml-menhir)
