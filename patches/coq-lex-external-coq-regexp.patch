@@ -1,22 +1,22 @@
-From 0c7ca9c767b14c0fcd4f9fd566113dec94cb0e2c Mon Sep 17 00:00:00 2001
+From 88eb9b1c12bffcdea37e75585d4727a97c012ed6 Mon Sep 17 00:00:00 2001
 From: Jean-Pierre De Jesus DIAZ <me@jeandudey.tech>
 Date: Fri, 19 Jul 2024 13:47:56 +0200
 Subject: [PATCH] Allow building with external coq-regexp.
 
 ---
- CoqLexLexer.v      | 1 -
- CoqLexUtils.v      | 2 --
- Extraction.v       | 1 -
- LexerDefinition.v  | 2 --
- Makefile           | 7 ++-----
- MatchLenSimpl.v    | 2 --
- RValues.v          | 2 --
- RegexpSimpl.v      | 2 --
- ShortestLen.v      | 1 -
- ShortestLenSimpl.v | 1 -
- SubLexeme.v        | 2 --
- coqlex.ml          | 1 -
- 12 files changed, 2 insertions(+), 22 deletions(-)
+ CoqLexLexer.v      |  1 -
+ CoqLexUtils.v      |  2 --
+ Extraction.v       |  1 -
+ LexerDefinition.v  |  2 --
+ Makefile           |  7 ++-----
+ MatchLenSimpl.v    |  2 --
+ RValues.v          |  2 --
+ RegexpSimpl.v      |  2 --
+ ShortestLen.v      |  1 -
+ ShortestLenSimpl.v |  1 -
+ SubLexeme.v        |  2 --
+ coqlex.ml          | 11 -----------
+ 12 files changed, 2 insertions(+), 32 deletions(-)
 
 diff --git a/CoqLexLexer.v b/CoqLexLexer.v
 index 589b091..bc07eb9 100644
@@ -171,7 +171,7 @@ index 94eec8b..3227748 100644
  Require Import Lia.
  Require Import MatchLenSimpl RegexpSimpl.
 diff --git a/coqlex.ml b/coqlex.ml
-index 659ac80..109631d 100644
+index 659ac80..abbf408 100644
 --- a/coqlex.ml
 +++ b/coqlex.ml
 @@ -292,7 +292,6 @@ let rec printlist f lst  = match lst with
@@ -182,6 +182,23 @@ index 659ac80..109631d 100644
  Require Import LexerDefinition RValues RegExp.Definitions RegExp.Char List CoqLexUtils SubLexeme RegexpSimpl.
  Require Import String.
  Import ListNotations.
+@@ -573,16 +572,6 @@ let () =
+ 				file_copy (Filename.concat prog_dirname "ShortestLen.vo") (Filename.concat inputfile_dirname "ShortestLen.vo");
+ 				file_copy (Filename.concat prog_dirname "RegexpSimpl.vo") (Filename.concat inputfile_dirname "RegexpSimpl.vo");
+ 				file_copy (Filename.concat prog_dirname "SubLexeme.vo") (Filename.concat inputfile_dirname "SubLexeme.vo");
+-				let inputfile_lib_dirname = Filename.concat inputfile_dirname "RegExpLib" in
+-				create_directory inputfile_lib_dirname;
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Boolean.vo") (Filename.concat inputfile_lib_dirname "Boolean.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Concat.vo") (Filename.concat inputfile_lib_dirname "Concat.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Includes.vo") (Filename.concat inputfile_lib_dirname "Includes.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Star.vo") (Filename.concat inputfile_lib_dirname "Star.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Char.vo") (Filename.concat inputfile_lib_dirname "Char.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Definitions.vo") (Filename.concat inputfile_lib_dirname "Definitions.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "RegExp.vo") (Filename.concat inputfile_lib_dirname "RegExp.vo");
+-				file_copy (Filename.concat (Filename.concat prog_dirname "regexp_opt") "Utility.vo") (Filename.concat inputfile_lib_dirname "Utility.vo");
+ 				Format.printf "-----------------end of log@.";
+ 				Format.printf "The lexer generation has been successfully executed in %s@." inputfile_dirname; 
+ 				if not !ignore_main then
 -- 
 2.45.2
 
