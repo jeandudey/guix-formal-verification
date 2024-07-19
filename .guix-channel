@@ -3,7 +3,7 @@
 
 (channel
  (version 0)
- (url "https://github.com/Foundation-Devices/guix-foundation")
+ (url "https://github.com/jeandudey/guix-formal-verification")
  (news-file "news.txt")
  (dependencies
   (channel
