@@ -231,6 +231,25 @@ additive functions to leaves of ring/field expressions before applying the
 proof procedures.")
     (license license:cecill-b)))
 
+;; FIXME: The upstream Guix version uses the version 1 of mathcomp.
+(define-public coq-mathcomp-bigenough-2
+  (package
+    (inherit coq-mathcomp-bigenough)
+    (name "coq-mathcomp-bigenough-2")
+    (version "1.0.1")
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml))
+    (propagated-inputs (list coq-mathcomp-2))
+    (inputs (list ocaml-zarith)))) ; Propagate in Coq.
+
 (define-public coq-mathcomp-zify
   (package
     (name "coq-mathcomp-zify")
