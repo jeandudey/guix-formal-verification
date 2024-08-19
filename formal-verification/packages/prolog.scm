@@ -24,11 +24,15 @@
                (base32
                 "1azb6j9kki8i8q30dpx39nrfjvfmdgq92wr69wybssijdmzxcy07"))))
     (build-system dune-build-system)
-    (propagated-inputs (list ocaml-re ocaml-yojson))
+    (propagated-inputs
+     (list ocaml-menhir
+           ocaml-ppx-deriving
+           ocaml-re
+           ocaml-yojson))
     (inputs
      (list ocaml-easy-format     ; Propagate on ocaml-biniou.
            ocaml-camlp-streams)) ; Likewise.
-    (native-inputs (list atd ocaml-ppx-deriving ocaml-menhir))
+    (native-inputs (list atd))
     (home-page "https://github.com/LPCIC/elpi")
     (synopsis "Embeddable λProlog interpreter")
     (description "This package provides the @acronym{ELPI, Embeddable Lambda
