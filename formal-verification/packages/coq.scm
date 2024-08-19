@@ -190,6 +190,38 @@ source file.")
     (propagated-inputs (list coq-hierarchy-builder))
     (inputs (list ocaml-zarith)))) ; Propagate in Coq.
 
+(define-public coq-mathcomp-zify
+  (package
+    (name "coq-mathcomp-zify")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/math-comp/mczify")
+                     (commit (string-append version "+2.0+8.16"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18qfzm5hsxr5mm6ip4krcf9bi1aab0k83qzrd0x5f66xyld5i03f"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:test-target "test-suite"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml))
+    (propagated-inputs (list coq-elpi coq-mathcomp-2))
+    (inputs (list ocaml-zarith))
+    (home-page "https://github.com/math-comp/algebra-tactics")
+    (synopsis "Micromega tactics for Mathematical Components Coq library")
+    (description "This package provides a Coq library extending the
+@code{zify} tactic to enable the use of arithmetic solvers of Coq for
+goals stated with the definitions of the Mathematical Components library.")
+    (license license:cecill-b)))
+
 (define-public coq-menhirlib
   (package
     (inherit ocaml-menhir)
