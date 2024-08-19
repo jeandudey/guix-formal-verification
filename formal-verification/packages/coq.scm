@@ -231,6 +231,40 @@ additive functions to leaves of ring/field expressions before applying the
 proof procedures.")
     (license license:cecill-b)))
 
+(define-public coq-mathcomp-analysis
+  (package
+    (name "coq-mathcomp-analysis")
+    (version "1.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/math-comp/analysis")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18bx73mfac189anqxgghc4c7z4qv1knchrm23hrq4q9ia3i304xm"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml which))
+    (propagated-inputs
+     (list coq-mathcomp-2
+           coq-mathcomp-bigenough-2
+           coq-mathcomp-finmap-2))
+    (inputs (list ocaml-zarith)) ; Propagate in Coq.
+    (home-page "https://github.com/math-comp/analysis")
+    (synopsis "Real analysis library for Coq")
+    (description "This library provides real analysis library for Coq, using
+the Mathematical Components library.")
+    (license license:cecill-c)))
+
 ;; FIXME: The upstream Guix version uses the version 1 of mathcomp.
 (define-public coq-mathcomp-bigenough-2
   (package
