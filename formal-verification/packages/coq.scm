@@ -59,6 +59,51 @@ types, define a new constant, declare implicit arguments, type classes
 instances, and so on.")
     (license license:lgpl2.1+)))
 
+;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
+;; doesn't support Coq 8.19 yet.
+(define-public coq-hierarchy-builder
+  (package
+    (name "coq-hierarchy-builder")
+    (version "1.6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/math-comp/hierarchy-builder")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0j3jws7ls79xnh4ghz2qpfcibpsa0fqywl3mj9xazf4fyz93djqk"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "DESTDIR=" #$output)
+                   (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; all target runs the test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml which))
+    (inputs (list ocaml-zarith)) ; Propagate in Coq.
+    (propagated-inputs (list coq-elpi))
+    (home-page "https://github.com/math-comp/hierarchy-builder")
+    (synopsis "Declare hierarchy of algebraic data structures in Coq")
+    (description "This package provides the @acronym{HB, Hierarchy Builder}
+commands to declare a hierarchy of algebraic structures (or interfaces using
+the computer science glossary) for the Coq system.
+
+Given a structure, one can develop its theory, and that theory becomes
+automatically applicable to all the examples of the structure.
+
+Commands compile down to Coq modules, sections, records, coercions,
+canonical structure instances and notations following the packed classes
+disciplines which is at the core of the
+@url{https://github.com/math-comp/math-comp, Mathematical Components} library.
+All that complexity is hidden behind a few concepts and a few declarative Coq
+commands.")
+    (license license:expat)))
+
 (define-public coq-lex
   (let ((revision "0")
         (commit "ded4153e73d71d08de300f226823bf7176949e01"))
