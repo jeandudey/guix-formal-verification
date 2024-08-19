@@ -24,12 +24,7 @@
                (base32
                 "1azb6j9kki8i8q30dpx39nrfjvfmdgq92wr69wybssijdmzxcy07"))))
     (build-system dune-build-system)
-    ;(arguments
-    ; (list #:phases
-    ;       #~(modify-phases %standard-phases
-    ;           (delete 'configure))))
     (propagated-inputs (list ocaml-re ocaml-yojson))
-    
     (inputs
      (list ocaml-easy-format     ; Propagate on ocaml-biniou.
            ocaml-camlp-streams)) ; Likewise.
