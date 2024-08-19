@@ -2,7 +2,9 @@
 ;;; SPDX-License-Identifier: GPL-3.0-or-later
 
 (define-module (formal-verification packages coq)
+  #:use-module (formal-verification packages prolog)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages coq)
   #:use-module (gnu packages ocaml)
   #:use-module (guix build-system gnu)
@@ -11,6 +13,53 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
+;; doesn't support Coq 8.19 yet.
+(define-public coq-elpi
+  (package
+    (name "coq-elpi")
+    (version "1.18.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/LPCIC/coq-elpi")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rkk84d25yy1p1rzzbf0w0glnykkxs0lkz4r5wi8kqd23ab8xw6r"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib")
+                   (string-append "COQPLUGININSTALL=" #$output
+                                  "/lib/ocaml/site-lib")
+                   (string-append "ELPIDIR="
+                                  #$(file-append (this-package-input "elpi")
+                                                 "/lib/ocaml/site-lib/elpi")))
+           #:tests? #f ;; FIXME.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-after 'unpack 'patch-tests
+                 (lambda _
+                   (substitute* "Makefile"
+                     (("\\$\\(MAKE\\) test-core") "")))))))
+    (native-inputs (list coq ocaml which))
+    (inputs (list elpi ocaml-stdlib-shims ocaml-zarith))
+    (home-page "https://github.com/LPCIC/coq-elpi")
+    (synopsis "Coq plugin to define commands and tactics in λProlog")
+    (description "This package provides Coq-ELPI, a Coq plugin providing the
+@acronym{ELPI, Embeddable Lambda Prolog Interpreter} language to define new
+commands and tactics.  For that purpose it provides an embedding of Coq's
+terms into λProlog using the @acronym{HOAS, Higher-Order Abstract Syntax}
+approach.  It also exports to ELPI a comprehensive set of Coq's primitives,
+so that one can print a message, access the environment of theorems and data
+types, define a new constant, declare implicit arguments, type classes
+instances, and so on.")
+    (license license:lgpl2.1+)))
 
 (define-public coq-lex
   (let ((revision "0")
