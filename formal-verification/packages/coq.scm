@@ -190,6 +190,47 @@ source file.")
     (propagated-inputs (list coq-hierarchy-builder))
     (inputs (list ocaml-zarith)))) ; Propagate in Coq.
 
+(define-public coq-mathcomp-algebra-tactics
+  (package
+    (name "coq-mathcomp-algebra-tactics")
+    (version "1.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/math-comp/algebra-tactics")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nwj563pkq126323dl8pp67cl3zx6iklgha7qk2fggy38xa3brza"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:test-target "test-suite"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml))
+    (propagated-inputs (list coq-elpi coq-mathcomp-2 coq-mathcomp-zify))
+    (inputs (list ocaml-zarith))
+    (home-page "https://github.com/math-comp/algebra-tactics")
+    (synopsis "Algebra tactics for Mathematical Components Coq library")
+    (description "This library provides @code{ring}, @code{field}, @code{lra},
+@code{nra}, and @code{psatz} tactics for the Mathematical Components library.
+These tactics use the algebraic structures defined in the MathComp library and
+their canonical instances for the instance resolution, and do not require any
+special instance declaration, like the `Add Ring` and `Add Field` commands.
+Therefore, each of these tactics works with any instance of the respective
+structure, including concrete instances declared through Hierarchy Builder,
+abstract instances, and mixed concrete and abstract instances, e.g.,
+@code{int * R} where `R` is an abstract commutative ring.  Another key feature
+of Algebra Tactics is that they automatically push down ring morphisms and
+additive functions to leaves of ring/field expressions before applying the
+proof procedures.")
+    (license license:cecill-b)))
+
 (define-public coq-mathcomp-zify
   (package
     (name "coq-mathcomp-zify")
