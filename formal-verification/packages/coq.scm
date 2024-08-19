@@ -35,10 +35,7 @@
            #~(list (string-append "COQLIBINSTALL=" #$output
                                   "/lib/coq/user-contrib")
                    (string-append "COQPLUGININSTALL=" #$output
-                                  "/lib/ocaml/site-lib")
-                   (string-append "ELPIDIR="
-                                  #$(file-append (this-package-input "elpi")
-                                                 "/lib/ocaml/site-lib/elpi")))
+                                  "/lib/ocaml/site-lib"))
            #:tests? #f ;; FIXME.
            #:phases
            #~(modify-phases %standard-phases
@@ -47,8 +44,9 @@
                  (lambda _
                    (substitute* "Makefile"
                      (("\\$\\(MAKE\\) test-core") "")))))))
-    (native-inputs (list coq ocaml which))
-    (inputs (list elpi ocaml-stdlib-shims ocaml-zarith))
+    (native-inputs (list coq ocaml-findlib ocaml which))
+    (propagated-inputs (list elpi))
+    (inputs (list ocaml-stdlib-shims ocaml-zarith))
     (home-page "https://github.com/LPCIC/coq-elpi")
     (synopsis "Coq plugin to define commands and tactics in λProlog")
     (description "This package provides Coq-ELPI, a Coq plugin providing the
