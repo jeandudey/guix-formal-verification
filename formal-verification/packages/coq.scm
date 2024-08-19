@@ -250,6 +250,33 @@ proof procedures.")
     (propagated-inputs (list coq-mathcomp-2))
     (inputs (list ocaml-zarith)))) ; Propagate in Coq.
 
+(define-public coq-mathcomp-finmap-2
+  (package
+    (inherit coq-mathcomp-finmap)
+    (name "coq-mathcomp-finmap")
+    (version "2.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/math-comp/finmap")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15mnhacy60kk3vrq9p6h08lhcjfpvh9bgpcw1wz2l3sm2yg1q7c2"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml))
+    (propagated-inputs (list coq-mathcomp-2))
+    (inputs (list ocaml-zarith)))) ; Propagate in Coq.
+
 (define-public coq-mathcomp-zify
   (package
     (name "coq-mathcomp-zify")
