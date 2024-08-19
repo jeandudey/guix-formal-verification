@@ -160,6 +160,36 @@ files for a description of a scanner to generate.  Coqlex generates a Coq
 source file.")
       (license license:expat))))
 
+(define-public coq-mathcomp-2
+  (package
+    (inherit coq-mathcomp)
+    (name "coq-mathcomp")
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/math-comp/math-comp")
+                     (commit (string-append "mathcomp-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v9xk013zymas3z9ikx0vwdc6yiv7d2lasjbncm30dg0my7bg7yw"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:test-target "test-suite"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-after 'unpack 'change-directory
+                 (lambda _
+                   (chdir "mathcomp"))))))
+    (native-inputs (list coq ocaml which))
+    (propagated-inputs (list coq-hierarchy-builder))
+    (inputs (list ocaml-zarith)))) ; Propagate in Coq.
+
 (define-public coq-menhirlib
   (package
     (inherit ocaml-menhir)
