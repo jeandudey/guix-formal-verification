@@ -424,3 +424,37 @@ goals stated with the definitions of the Mathematical Components library.")
       ;; TODO: License says on file://description that it is LGPL, however
       ;; version is not specified.
       (license license:lgpl3))))
+
+(define-public coq-vst
+  (package
+    (name "coq-vst")
+    (version "2.14")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/PrincetonUniversity/VST")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "137c04a8c3qr5y83v1jdpx1gbp3qf9mzmdjjw9r7d6cm1mjkaxrl"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list "COMPCERT=inst_dir"
+                   (string-append "COMPCERT_INST_DIR="
+                                  #$(this-package-input "compcert-for-vst")
+                                  "/lib/compcert/coq/")
+                   (string-append "INSTALLDIR=" #$output
+                                  "/lib/coq/user-contrib/VST"))
+           #:test-target "test"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (inputs (list compcert-for-vst))
+    (home-page "https://vst.cs.princeton.edu/")
+    (synopsis "Toolset for proving functional correctness of C programs")
+    (description "This package provides the @acronym{VST, Verified Software
+Toolchain}, for proving the functional correctness of C programs.")
+    (license license:bsd-2)))
