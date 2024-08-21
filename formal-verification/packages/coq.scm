@@ -22,7 +22,9 @@
     (name "compcert-for-vst")
     (arguments
      (list #:configure-flags
-           #~(list "-clightgen"
+           #~(list "-coqdevdir"
+                   (string-append #$output "/lib/coq/user-contrib/compcert")
+                   "-clightgen"
                    "-ignore-coq-version"
                    "-install-coq-dev"
                    "-use-external-Flocq"
@@ -444,7 +446,7 @@ goals stated with the definitions of the Mathematical Components library.")
            #~(list "COMPCERT=inst_dir"
                    (string-append "COMPCERT_INST_DIR="
                                   #$(this-package-input "compcert-for-vst")
-                                  "/lib/compcert/coq/")
+                                  "/lib/coq/user-contrib/compcert/")
                    (string-append "INSTALLDIR=" #$output
                                   "/lib/coq/user-contrib/VST"))
            #:test-target "test"
