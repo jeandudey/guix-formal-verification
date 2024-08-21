@@ -452,7 +452,7 @@ goals stated with the definitions of the Mathematical Components library.")
            #~(modify-phases %standard-phases
                (delete 'configure))))
     (native-inputs (list coq))
-    (inputs (list compcert-for-vst))
+    (propagated-inputs (list compcert-for-vst))
     (home-page "https://vst.cs.princeton.edu/")
     (synopsis "Toolset for proving functional correctness of C programs")
     (description "This package provides the @acronym{VST, Verified Software
