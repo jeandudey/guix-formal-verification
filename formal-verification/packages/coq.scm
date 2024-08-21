@@ -12,7 +12,34 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (nongnu packages coq)
+  #:use-module (ice-9 match))
+
+(define-public compcert-for-vst
+  (package
+    (inherit compcert)
+    (name "compcert-for-vst")
+    (arguments
+     (list #:configure-flags
+           #~(list "-clightgen"
+                   "-ignore-coq-version"
+                   "-install-coq-dev"
+                   "-use-external-Flocq"
+                   "-use-external-MenhirLib")
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'configure
+                 (lambda* (#:key configure-flags #:allow-other-keys)
+                   (apply invoke "./configure"
+                          #$(match (or (%current-target-system) (%current-system))
+                              ("armhf-linux" "arm-eabihf")
+                              ("i686-linux" "x86_32-linux")
+                              (s s))
+                          "-prefix" #$output
+                          configure-flags))))))
+    (propagated-inputs (list coq-flocq coq-menhirlib))))
 
 ;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
 ;; doesn't support Coq 8.19 yet.
