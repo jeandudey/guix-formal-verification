@@ -450,6 +450,36 @@ goals stated with the definitions of the Mathematical Components library.")
     (propagated-inputs (list))
     (inputs (list))))
 
+(define-public coq-parsec
+  (package
+    (name "coq-parsec")
+    (version "0.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/liyishuai/coq-parsec")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0402pdp6mn161ligvlzsga3wqjrmxmrbj99v0k8a1wqp5ga23pa0"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (propagated-inputs (list coq-ceres coq-ext-lib))
+    (home-page "https://github.com/liyishuai/coq-parsec")
+    (synopsis "Monadic parser combinator library for Coq")
+    (description "This package provides a monadic parser combinator library
+for Coq.")
+    (license license:expat)))
+
 (define-public coq-regexp
   (let ((revision "0")
         (commit "da6d250506ea667266282cc7280355d13b27c68d"))
