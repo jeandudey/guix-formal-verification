@@ -88,6 +88,35 @@ types, define a new constant, declare implicit arguments, type classes
 instances, and so on.")
     (license license:lgpl2.1+)))
 
+(define-public coq-ext-lib
+  (package
+    (name "coq-ext-lib")
+    (version "0.12.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/coq-community/coq-ext-lib")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fmr9rkdl3mcpflq41cjlf7zn0s798s330yd335jygq72n4z50b0"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; all target runs the test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (home-page "https://github.com/coq-community/coq-ext-lib")
+    (synopsis "Collection of useful theories in Coq")
+    (description "This package provides a generic collection of useful
+theories for Coq that can be used in other developments.")
+    (license license:bsd-2)))
+
 ;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
 ;; doesn't support Coq 8.19 yet.
 (define-public coq-hierarchy-builder
