@@ -191,6 +191,35 @@ All that complexity is hidden behind a few concepts and a few declarative Coq
 commands.")
     (license license:expat)))
 
+(define-public coq-json
+  (package
+    (name "coq-json")
+    (version "0.1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/liyishuai/coq-json")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07argz5jszkhd98bhzfisb50qz9af8whxq590y0pzf88dv6l0jcl"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq ocaml-menhir))
+    (propagated-inputs (list coq-ext-lib coq-menhirlib coq-parsec))
+    (home-page "https://github.com/liyishuai/coq-json")
+    (synopsis "JSON encoder and decoder for Coq")
+    (description "This package provides a JSON encoder and decoder for Coq.")
+    (license license:bsd-3)))
+
 (define-public coq-lex
   (let ((revision "0")
         (commit "ded4153e73d71d08de300f226823bf7176949e01"))
