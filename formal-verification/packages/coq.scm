@@ -43,6 +43,35 @@
                           configure-flags))))))
     (propagated-inputs (list coq-flocq coq-menhirlib))))
 
+(define-public coq-ceres
+  (package
+    (name "coq-ceres")
+    (version "0.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Lysxia/coq-ceres")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "080nldsxmrxdan6gd0dvdgswn3gkwpy5hdqwra6wlmh8zzrs9z7n"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (home-page "https://github.com/Lysxia/coq-ceres")
+    (synopsis "S-expression serialization for Coq")
+    (description "This package provides a S-expression serialization and
+de-serialization for Coq as an alternative to debug data structures.")
+    (license license:expat)))
+
 ;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
 ;; doesn't support Coq 8.19 yet.
 (define-public coq-elpi
