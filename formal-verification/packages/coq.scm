@@ -266,7 +266,8 @@ commands.")
                                    "RegexpSimpl.v" "ShortestLen.v"
                                    "ShortestLenSimpl.v" "SubLexeme.v"))))))))
       (native-inputs (list coq ocaml ocaml-menhir))
-      (inputs (list coq-menhirlib coq-regexp))
+      (propagated-inputs (list coq-regexp))
+      (inputs (list coq-menhirlib))
       (home-page "https://gitlab.inria.fr/wouedrao/coqlex")
       (synopsis "Formally verified lexical analyzer generator")
       (description "Coqlex is a formally verified tool for generating
