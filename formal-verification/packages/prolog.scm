@@ -5,7 +5,6 @@
   #:use-module (formal-verification packages serialization)
   #:use-module (gnu packages ocaml)
   #:use-module (guix build-system dune)
-  ;#:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
