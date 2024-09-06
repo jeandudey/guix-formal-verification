@@ -220,6 +220,37 @@ commands.")
     (description "This package provides a JSON encoder and decoder for Coq.")
     (license license:bsd-3)))
 
+(define-public coq-kami
+  (let ((revision "0")
+        (commit "de880ce21dc927b050e33e803c903238978f8021"))
+    (package
+      (name "coq-kami")
+      (version (git-version "0.0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/mit-plv/kami")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1lhavmrcqdcd1psskqifgnfl8ypi741lng32ms4wch3cwnhdqici"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list #:make-flags
+             #~(list (string-append "COQLIBINSTALL=" #$output
+                                    "/lib/coq/user-contrib"))
+             #:tests? #f ; No test suite.
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure))))
+      (native-inputs (list coq))
+      (home-page "https://github.com/mit-plv/kami")
+      (synopsis "Parametric hardware specification for Coq")
+      (description "Kami is a platform for high-level parametric hardware
+specification and its modular verification.")
+      (license license:expat))))
+
 (define-public coq-lex
   (let ((revision "0")
         (commit "ded4153e73d71d08de300f226823bf7176949e01"))
