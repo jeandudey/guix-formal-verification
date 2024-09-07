@@ -609,3 +609,31 @@ for Coq.")
     (description "This package provides the @acronym{VST, Verified Software
 Toolchain}, for proving the functional correctness of C programs.")
     (license license:bsd-2)))
+
+(define-public coq-util
+  (package
+    (name "coq-util")
+    (version "0.0.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mit-plv/coqutil")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1b3fyb3npx950q9m5w23hylffgqa28c5ahk911p67n7w1804himy"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                   "/lib/coq/user-contrib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (home-page "https://github.com/mit-plv/coqutil")
+    (synopsis "Utility library for Coq")
+    (description "This package provides various utilities for Coq.")
+    (license license:expat)))
