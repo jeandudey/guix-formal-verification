@@ -380,6 +380,8 @@ additive functions to leaves of ring/field expressions before applying the
 proof procedures.")
     (license license:cecill-b)))
 
+;; FIXME: Compilation of coq-mathcomp-finmap-2 fails to this one does not
+;; compile.
 (define-public coq-mathcomp-analysis
   (package
     (name "coq-mathcomp-analysis")
@@ -407,7 +409,6 @@ proof procedures.")
      (list coq-mathcomp-2
            coq-mathcomp-bigenough-2
            coq-mathcomp-finmap-2))
-    (inputs (list ocaml-zarith)) ; Propagate in Coq.
     (home-page "https://github.com/math-comp/analysis")
     (synopsis "Real analysis library for Coq")
     (description "This library provides real analysis library for Coq, using
