@@ -121,7 +121,7 @@ instances, and so on.")
 (define-public coq-ext-lib
   (package
     (name "coq-ext-lib")
-    (version "0.12.1")
+    (version "0.12.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -130,7 +130,7 @@ instances, and so on.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fmr9rkdl3mcpflq41cjlf7zn0s798s330yd335jygq72n4z50b0"))))
+                "0ikc83qcnghd8mlzdabdr1akcfclsbss2anp0wx0df0jk5pfa94m"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
