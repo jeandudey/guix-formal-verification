@@ -364,7 +364,6 @@ source file.")
                (delete 'configure))))
     (native-inputs (list coq ocaml))
     (propagated-inputs (list coq-elpi coq-mathcomp-2 coq-mathcomp-zify))
-    (inputs (list ocaml-zarith)) ; Propagate in Coq.
     (home-page "https://github.com/math-comp/algebra-tactics")
     (synopsis "Algebra tactics for Mathematical Components Coq library")
     (description "This library provides @code{ring}, @code{field}, @code{lra},
