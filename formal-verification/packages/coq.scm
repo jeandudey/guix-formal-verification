@@ -485,7 +485,6 @@ the Mathematical Components library.")
                (delete 'configure))))
     (native-inputs (list coq ocaml))
     (propagated-inputs (list coq-elpi coq-mathcomp-2))
-    (inputs (list ocaml-zarith))
     (home-page "https://github.com/math-comp/mczify")
     (synopsis "Micromega tactics for Mathematical Components Coq library")
     (description "This package provides a Coq library extending the
