@@ -430,8 +430,7 @@ the Mathematical Components library.")
            #~(modify-phases %standard-phases
                (delete 'configure))))
     (native-inputs (list coq ocaml))
-    (propagated-inputs (list coq-mathcomp-2))
-    (inputs (list ocaml-zarith)))) ; Propagate in Coq.
+    (propagated-inputs (list coq-mathcomp-2))))
 
 ;; FIXME: Fails to build on 8.18 for some reason.
 (define-public coq-mathcomp-finmap-2
