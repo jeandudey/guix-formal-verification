@@ -105,7 +105,7 @@ de-serialization for Coq as an alternative to debug data structures.")
                      (("\\$\\(MAKE\\) test-core") "")))))))
     (native-inputs (list coq ocaml-findlib ocaml which))
     (propagated-inputs (list elpi))
-    (inputs (list ocaml-stdlib-shims ocaml-zarith))
+    (inputs (list ocaml-stdlib-shims))
     (home-page "https://github.com/LPCIC/coq-elpi")
     (synopsis "Coq plugin to define commands and tactics in λProlog")
     (description "This package provides Coq-ELPI, a Coq plugin providing the
