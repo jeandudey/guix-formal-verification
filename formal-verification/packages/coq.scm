@@ -72,12 +72,13 @@
 de-serialization for Coq as an alternative to debug data structures.")
     (license license:expat)))
 
-;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
-;; doesn't support Coq 8.19 yet.
+;; FIXME: Using this version because we are stuck with Coq 8.18 as Why3
+;; doesn't support Coq 8.20 yet, also 2.x versions don't build with
+;; Coq 8.18, so use 1.19.3 which is the latest one known to work.
 (define-public coq-elpi
   (package
     (name "coq-elpi")
-    (version "1.18.0")
+    (version "1.19.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -86,7 +87,7 @@ de-serialization for Coq as an alternative to debug data structures.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rkk84d25yy1p1rzzbf0w0glnykkxs0lkz4r5wi8kqd23ab8xw6r"))))
+                "05zw0dgvpxxc4f9zmkaw8wlz301612wbly0m2n26zdcklm9q7m86"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
