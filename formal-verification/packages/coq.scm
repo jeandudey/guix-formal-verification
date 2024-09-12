@@ -147,8 +147,9 @@ instances, and so on.")
 theories for Coq that can be used in other developments.")
     (license license:bsd-2)))
 
-;; FIXME: Using this version because we are stuck with Coq 8.17 as Why3
-;; doesn't support Coq 8.19 yet.
+;; FIXME: Using this version because we are stuck with Coq 8.18 as Why3
+;; doesn't support Coq 8.20 yet.  For some reason 1.7.0 does not work with
+;; Coq 8.18 even though the release note says it should work.
 (define-public coq-hierarchy-builder
   (package
     (name "coq-hierarchy-builder")
