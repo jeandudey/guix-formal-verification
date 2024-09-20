@@ -12,7 +12,7 @@
 (define-public elpi
   (package
     (name "elpi")
-    (version "1.19.6")
+    (version "1.18.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -21,7 +21,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0p8bg2bjz89s8h9g1g543jzb6nwqimz97l16dlj2sawfprr0xkpb"))))
+                "0xkq1l4s4kvkwd4x0zjvqn4gs7vkrh5x7hk611r74yq3yiwlj06f"))))
     (build-system dune-build-system)
     (propagated-inputs
      (list ocaml-menhir
