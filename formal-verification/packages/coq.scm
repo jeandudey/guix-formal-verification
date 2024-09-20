@@ -78,7 +78,7 @@ de-serialization for Coq as an alternative to debug data structures.")
 (define-public coq-elpi
   (package
     (name "coq-elpi")
-    (version "1.19.3")
+    (version "2.0.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -87,7 +87,7 @@ de-serialization for Coq as an alternative to debug data structures.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05zw0dgvpxxc4f9zmkaw8wlz301612wbly0m2n26zdcklm9q7m86"))))
+                "1zzblsmrvj9ggx1kgp8xs2s348s6xkmkvd3fl2kn4vfpiklmfafj"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
