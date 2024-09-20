@@ -153,7 +153,7 @@ theories for Coq that can be used in other developments.")
 (define-public coq-hierarchy-builder
   (package
     (name "coq-hierarchy-builder")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -162,7 +162,7 @@ theories for Coq that can be used in other developments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j3jws7ls79xnh4ghz2qpfcibpsa0fqywl3mj9xazf4fyz93djqk"))))
+                "1601sgqb9yhnanjbkvla4dzp7d5xqrlc8gvwh44jgak6k2w9x92s"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
@@ -174,7 +174,6 @@ theories for Coq that can be used in other developments.")
            #~(modify-phases %standard-phases
                (delete 'configure))))
     (native-inputs (list coq ocaml which))
-    (inputs (list ocaml-zarith)) ; Propagate in Coq.
     (propagated-inputs (list coq-elpi))
     (home-page "https://github.com/math-comp/hierarchy-builder")
     (synopsis "Declare hierarchy of algebraic data structures in Coq")
