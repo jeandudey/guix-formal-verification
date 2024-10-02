@@ -7,6 +7,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages coq)
   #:use-module (gnu packages ocaml)
+  #:use-module (gnu packages python)
   #:use-module (guix build-system gnu)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
@@ -505,6 +506,47 @@ goals stated with the definitions of the Mathematical Components library.")
     (native-inputs (list coq))
     (propagated-inputs (list))
     (inputs (list))))
+
+(define-public coq-paco
+  (package
+    (name "coq-paco")
+    (version "4.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/snu-sf/paco")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+                #~(for-each delete-file (find-files "src" "g?paco.*\\.v$")))
+              (sha256
+               (base32
+                "1il0mzbvdgmxk6k315ak04j27l7pqazw1s3xxayyk2k17y5jsxk0"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:tests? #f ;; No test suite.
+           #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'build 'generate-sources
+                 (lambda _
+                   (with-directory-excursion "metasrc"
+                     (invoke "bash" "./build.sh"))))
+               (add-after 'generate-sources 'change-directory
+                 (lambda _
+                   (chdir "src")))
+               (delete 'configure)
+               (replace 'install
+                 (lambda* (#:key make-flags #:allow-other-keys)
+                   (apply invoke "make" "-f" "Makefile.coq" "install" make-flags))))))
+    (native-inputs (list coq python-2))
+    (home-page "https://github.com/snu-sf/paco")
+    (synopsis "Parametric coinduction for Coq")
+    (description "Paco is a library for parametric coinduction.")
+    (license license:bsd-3)))
 
 (define-public coq-parsec
   (package
