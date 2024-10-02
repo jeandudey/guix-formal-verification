@@ -190,6 +190,36 @@ All that complexity is hidden behind a few concepts and a few declarative Coq
 commands.")
     (license license:expat)))
 
+(define-public coq-itree
+  (package
+    (name "coq-itree")
+    (version "5.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/DeepSpec/InteractionTrees")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ihfq9dynckgbcsk95v8rn9ychkm00dhb7q7f5qzyzqrx7nz78mc"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (propagated-inputs (list coq-paco coq-ext-lib))
+    (home-page "https://github.com/DeepSpec/InteractionTrees")
+    (synopsis "Represent impure and recursive programs in Coq")
+    (description "This package provides a library allowing the representation
+of impure and recursive programs in Coq with equational reasoning.")
+    (license license:expat)))
+
 (define-public coq-json
   (package
     (name "coq-json")
