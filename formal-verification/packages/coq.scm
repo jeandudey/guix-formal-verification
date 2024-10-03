@@ -148,6 +148,41 @@ instances, and so on.")
 theories for Coq that can be used in other developments.")
     (license license:bsd-2)))
 
+(define-public coq-fcf
+  (package
+    (name "coq-fcf")
+    (version "8.16")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/adampetcher/fcf")
+                     (commit (string-append
+                               "coq_"
+                               (string-replace-substring version "." "_")))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gdwns0ijwy4hxfvhfyjzp7rhw4l3yjgcrmxvhliyilwk1bqjhm1"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'configure
+                 (lambda _
+                   (invoke "coq_makefile"
+                           "-f" "_CoqProject"
+                           "-o" "Makefile"))))))
+    (native-inputs (list coq))
+    (home-page "https://github.com/adampetcher/fcf")
+    (synopsis "@acronym{FCF, Foundational Cryptography Framework} for Coq")
+    (description "This package provides the @acronym{FCF, Foundational
+Cryptography Framework} for machine-checked proofs of cryptography for Coq.")
+    (license license:asl2.0)))
+
 (define-public coq-hierarchy-builder
   (package
     (name "coq-hierarchy-builder")
