@@ -1034,7 +1034,7 @@ Toolchain}, for proving the functional correctness of C programs.")
 (define-public coq-util
   (package
     (name "coq-util")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1043,7 +1043,7 @@ Toolchain}, for proving the functional correctness of C programs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b3fyb3npx950q9m5w23hylffgqa28c5ahk911p67n7w1804himy"))))
+                "0vkja05cbrzzdcd5iv6awapjw3gdi8d61fwvyniyd1hs7np5vxvk"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
