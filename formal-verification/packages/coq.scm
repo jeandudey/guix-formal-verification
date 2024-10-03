@@ -680,6 +680,10 @@ for Coq.")
 
 ;; FIXME: This does not build because installation fails. Perhaps it has to do
 ;; with the new make merged from core-updates.
+;;
+;; NOTE: Is this considered as a generated source? hs-to-coq fails to build on
+;; recent GHC versions and hasn't been maintained in a year, perhaps this code
+;; has also been modified manually.
 (define-public coq-riscv
   (package
     (name "coq-riscv")
@@ -696,14 +700,20 @@ for Coq.")
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
-           #~(list "EXTERNAL_COQUTIL=1"
-                   "EXTERNAL_DEPENDENCIES=1"
+           #~(list "-f" "Makefile.coq.all"
                    (string-append "COQLIBINSTALL=" #$output
-                   "/lib/coq/user-contrib"))
+                                  "/lib/coq/user-contrib"))
            #:tests? #f
            #:phases
            #~(modify-phases %standard-phases
-               (delete 'configure))))
+               ;; The Makefile for some reason fails to install the built
+               ;; files, so just tell it to generate the Coq Makefile and
+               ;; handle it manually.
+               (replace 'configure
+                 (lambda _
+                   (invoke "make" "Makefile.coq.all"
+                           "EXTERNAL_COQUTIL=1"
+                           "EXTERNAL_DEPENDENCIES=1"))))))
     (native-inputs (list coq))
     (propagated-inputs (list coq-util))
     (home-page "https://github.com/mit-plv/riscv-coq")
