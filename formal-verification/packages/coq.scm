@@ -888,6 +888,17 @@ generated using @code{hs-to-coq}, with manually written Coq code.")
                      (format #t "generate-clight-sources: `concurrency/threads.c'~%" )
                      (invoke "clightgen" "-normalize" "threads.c"))
 
+                   (with-directory-excursion "progs"
+                     (for-each (lambda (file)
+                                 (format #t "generate-clight-sources: `progs/~a'~%" file)
+                                 (invoke "clightgen" "-normalize" file))
+                               '("cast_test.c" "float.c" "floyd_tests.c"
+                                 "global.c" "load_demo.c" "nest2.c" "nest3.c"
+                                 "objectSelf.c" "objectSelfFancy.c"
+                                 "objectSelfFancyOverriding.c" "ptr_compare.c"
+                                 "queue2.c" "store_demo.c" "structcopy.c"
+                                 "sumarray2.c" "switch.c" "union.c")))
+
                    (with-directory-excursion "progs64"
                      (for-each (lambda (file)
                                  (format #t "generate-clight-sources: `progs64/~a'~%" file)
