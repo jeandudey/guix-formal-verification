@@ -399,6 +399,7 @@ source file.")
                  (lambda _
                    (chdir "mathcomp"))))))
     (native-inputs (list coq ocaml which))
+    (inputs '())
     (propagated-inputs (list coq-hierarchy-builder))))
 
 (define-public coq-mathcomp-algebra-tactics
