@@ -688,6 +688,12 @@ for Coq.")
                      (url "https://github.com/PrincetonUniversity/VST")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   (delete-file-recursively "doc/graphics")
+                   (delete-file-recursively "concurrency/paco_old")
+                   (delete-file-recursively "compcert_new")))
               (sha256
                (base32
                 "137c04a8c3qr5y83v1jdpx1gbp3qf9mzmdjjw9r7d6cm1mjkaxrl"))))
@@ -695,6 +701,9 @@ for Coq.")
     (arguments
      (list #:make-flags
            #~(list "COMPCERT=inst_dir"
+                   (string-append "CLIGHTGEN="
+                                  #$(this-package-input "compcert-for-vst")
+                                  "/bin/clightgen")
                    (string-append "COMPCERT_INST_DIR="
                                   #$(this-package-input "compcert-for-vst")
                                   "/lib/coq/user-contrib/compcert/")
@@ -703,6 +712,10 @@ for Coq.")
            #:test-target "test"
            #:phases
            #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-/bin/pwd
+                 (lambda _
+                   (substitute* "util/coqflags"
+                     (("/bin/pwd") "pwd"))))
                (delete 'configure))))
     (native-inputs (list coq))
     (propagated-inputs (list compcert-for-vst))
