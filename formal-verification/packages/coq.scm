@@ -80,6 +80,30 @@
 language for low-level programming.")
     (license license:expat)))
 
+(define-public coq-bedrock2-compiler
+  (package
+    (inherit coq-bedrock2)
+    (name "coq-bedrock2-compiler")
+    (arguments
+     (list #:make-flags
+           #~(list "EXTERNAL_DEPENDENCIES=1"
+                   "EXTERNAL_COQUTIL=1"
+                   "EXTERNAL_RISCV_COQ=1"
+                   (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-before 'build 'change-directory
+                 (lambda _
+                   (chdir "compiler"))))))
+    (native-inputs (list coq python-minimal))
+    (propagated-inputs (list coq-bedrock2 coq-riscv coq-util))
+    (synopsis "Compiler for Bedrock2 to RISC-V in Coq")
+    (description "This package provides a compiler for the Bedrock2 targeting
+RISC-V, using Coq.")))
+
 (define-public coq-ceres
   (package
     (name "coq-ceres")
