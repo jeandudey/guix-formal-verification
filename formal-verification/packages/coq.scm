@@ -44,6 +44,42 @@
                           configure-flags))))))
     (propagated-inputs (list coq-flocq coq-menhirlib))))
 
+(define-public coq-bedrock2
+  (package
+    (name "coq-bedrock2")
+    (version "0.0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mit-plv/bedrock2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ay5hnr7yg6x9m2xbsrwwly6zg8grqjf0kqpaw91h81vzflsqr78"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list "EXTERNAL_DEPENDENCIES=1"
+                   "EXTERNAL_COQUTIL=1"
+                   (string-append "CC=" #$(cc-for-target))
+                   (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-before 'build 'change-directory
+                 (lambda _
+                   (chdir "bedrock2"))))))
+    (native-inputs (list coq python-minimal))
+    (propagated-inputs (list coq-util))
+    (home-page "https://github.com/mit-plv/bedrock2")
+    (synopsis "Language for low-level programming in Coq")
+    (description "This package provides the definition of the Bedrock2
+language for low-level programming.")
+    (license license:expat)))
+
 (define-public coq-ceres
   (package
     (name "coq-ceres")
