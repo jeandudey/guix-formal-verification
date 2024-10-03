@@ -715,6 +715,42 @@ for Coq.")
       ;; version is not specified.
       (license license:lgpl3))))
 
+(define-public coq-rewriter
+  (package
+    (name "coq-rewriter")
+    (version "0.0.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mit-plv/rewriter")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "131ykd1sl6l45yzxiq3kh69rkgc98sj9qhafl17dj8phr79hx2k9"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list "EXTERNAL_BEDROCK2=1"
+                   "EXTERNAL_COQUTIL=1"
+                   "EXTERNAL_DEPENDENCIES=1"
+                   (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib")
+                   (string-append "COQPLUGININSTALL=" #$output
+                                  "/lib/ocaml/site-lib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list ocaml coq))
+    (home-page "https://github.com/mit-plv/rewriter")
+    (synopsis "Reflective PHOAS rewriting for Coq")
+    (description "This package provides a Coq library for reflective
+@acronym{PHOAS, Parametric Higher-Order Abstract Syntax} rewriting or
+pattern-matching compilation framework for simply-typed equalities and
+let-lifting.")
+    (license (list license:asl2.0 license:bsd-1 license:expat))))
+
 ;; NOTE: Is this considered as a generated source? hs-to-coq fails to build on
 ;; recent GHC versions and hasn't been maintained in a year, perhaps this code
 ;; has also been modified manually.
