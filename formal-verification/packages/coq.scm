@@ -678,9 +678,6 @@ for Coq.")
       ;; version is not specified.
       (license license:lgpl3))))
 
-;; FIXME: This does not build because installation fails. Perhaps it has to do
-;; with the new make merged from core-updates.
-;;
 ;; NOTE: Is this considered as a generated source? hs-to-coq fails to build on
 ;; recent GHC versions and hasn't been maintained in a year, perhaps this code
 ;; has also been modified manually.
