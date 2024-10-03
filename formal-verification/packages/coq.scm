@@ -756,6 +756,39 @@ for Coq.")
 generated using @code{hs-to-coq}, with manually written Coq code.")
     (license license:bsd-3)))
 
+(define-public coq-rupicola
+  (package
+    (name "coq-rupicola")
+    (version "0.0.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mit-plv/rupicola")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10cmsni96i1a9lb99vyz8g9i5354fa6mjd1xnqnwin1ir7xgh2md"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list "EXTERNAL_BEDROCK2=1"
+                   "EXTERNAL_COQUTIL=1"
+                   "EXTERNAL_DEPENDENCIES=1"
+                   (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (propagated-inputs (list coq-bedrock2 coq-util))
+    (home-page "https://github.com/mit-plv/rupicola")
+    (synopsis "Gallina to Bedrock2 compiler in Coq")
+    (description "This package provides a compiler to convert Gallina to
+Bedrock2 in Coq.")
+    (license license:expat)))
+
 ;; To update this list, run this on the original VCS checkout:
 ;;
 ;;   guix shell bash coreutils ripgrep --pure -- \
