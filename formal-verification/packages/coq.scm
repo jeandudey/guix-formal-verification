@@ -286,7 +286,7 @@ of impure and recursive programs in Coq with equational reasoning.")
 
 (define-public coq-kami
   (let ((revision "0")
-        (commit "de880ce21dc927b050e33e803c903238978f8021"))
+        (commit "3ab094327db916f9db7569c8a378113c5d0da748"))
     (package
       (name "coq-kami")
       (version (git-version "0.0.3" revision commit))
@@ -298,7 +298,7 @@ of impure and recursive programs in Coq with equational reasoning.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1lhavmrcqdcd1psskqifgnfl8ypi741lng32ms4wch3cwnhdqici"))))
+                  "0gads2al46ii7h77q20wbjyd41a2c2cvc21ld3mn390irx5vs9rh"))))
       (build-system gnu-build-system)
       (arguments
        (list #:make-flags
