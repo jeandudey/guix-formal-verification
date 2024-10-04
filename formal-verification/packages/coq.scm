@@ -633,6 +633,80 @@ goals stated with the definitions of the Mathematical Components library.")
     (propagated-inputs (list))
     (inputs (list))))
 
+(define-public coq-metacoq
+  (package
+    (name "coq-metacoq")
+    (version "1.3.1-8.18")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/MetaCoq/metacoq")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dk3sn8vfgnzd0wlaxda21vpdk8bjns28rnlwrpsradh1gh2d9ig"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:tests? #f ;; FIXME.
+           #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib")
+                   (string-append "COQPLUGININSTALL=" #$output
+                                  "/lib/ocaml/site-lib"))
+           #:phases
+           #~(let ((build (lambda (dir)
+                            (lambda args
+                              (with-directory-excursion dir
+                                (apply (assoc-ref %standard-phases 'build)
+                                       args)
+                                (apply (assoc-ref %standard-phases 'install)
+                                       args))))))
+               (modify-phases %standard-phases
+                 (replace 'configure
+                   (lambda _
+                     (invoke "bash" "configure.sh")
+                     (setenv "COQPATH"
+                             (string-append (getenv "COQPATH") ":" #$output
+                                            "/lib/coq/user-contrib"))
+                     (setenv "OCAMLPATH"
+                             (string-append (getenv "OCAMLPATH") ":" #$output
+                                            "/lib/ocaml/site-lib"))))
+                 (delete 'build)
+                 (add-after 'configure 'build-utils
+                   (build "utils"))
+                 (add-after 'build-utils 'build-common
+                   (build "common"))
+                 (add-after 'build-common 'build-template-coq
+                   (build "template-coq"))
+                 (add-after 'build-template-coq 'build-translations
+                   (build "translations"))
+                 (add-after 'build-translations 'build-pcuic
+                   (build "pcuic"))
+                 (add-after 'build-pcuic 'build-template-pcuic
+                   (build "template-pcuic"))
+                 (add-after 'build-template-pcuic 'build-quotation
+                   (build "quotation"))
+                 (add-after 'build-quotation 'build-safechecker
+                   (build "safechecker"))
+                 (add-after 'build-safechecker 'build-safechecker-plugin
+                   (build "safechecker-plugin"))
+                 (add-after 'build-safechecker-plugin 'build-erasure
+                   (build "erasure"))
+                 (add-after 'build-erasure 'build-erasure-plugin
+                   (build "erasure-plugin"))
+                 (delete 'install)))))
+    (native-inputs (list ocaml coq))
+    (propagated-inputs
+     (list coq-equations
+           ocaml-stdlib-shims))
+    (home-page "https://metacoq.github.io/")
+    (synopsis "Formalization of Coq in Coq")
+    (description "MetaCoq is a project formalizing Coq in Coq and provinding
+tools for manipulation of Coq terms and development of certified Coq plugins
+in Coq.")
+    (license license:expat)))
+
 (define-public coq-paco
   (package
     (name "coq-paco")
