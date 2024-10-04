@@ -704,6 +704,36 @@ goals stated with the definitions of the Mathematical Components library.")
 for Coq.")
     (license license:expat)))
 
+(define-public coq-prime
+  (package
+    (name "coq-prime")
+    (version "8.18")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/thery/coqprime")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18a3jswc1aqq7y91sz0f84nvklmkxxnx1gbanq914nmbhw8w3ri8"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list "COQBIN="
+                   (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; FIXME.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (propagated-inputs (list coq-bignums))
+    (home-page "https://github.com/thery/coqprime")
+    (synopsis "Primer numbers for Coq")
+    (description "This package provides a prime number library for Coq.")
+    (license license:lgpl2.1)))
+
 (define-public coq-regexp
   (let ((revision "0")
         (commit "da6d250506ea667266282cc7280355d13b27c68d"))
