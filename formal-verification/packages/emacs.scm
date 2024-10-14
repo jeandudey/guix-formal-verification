@@ -29,3 +29,31 @@
       (description "This package provides an Emacs library for creating inline
 windows or pop-ups.")
       (license license:gpl3+))))
+
+(define-public emacs-fstar-mode
+  (let ((commit "6e5d3ea858f3c8a9d01161d9089909c2b22fdfca")
+        (revision "0"))
+    (package
+      (name "emacs-fstar-mode")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/FStarLang/fstar-mode.el")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1z1mcmmrfx1nx3d3374wb7qykzdc3qh9ssgs2wz7b5vnv9cbdfn6"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-company
+                               emacs-company-quickhelp
+                               emacs-dash
+                               emacs-flycheck
+                               emacs-quick-peek
+                               emacs-yasnippet))
+      (home-page "https://github.com/FStarLang/fstar-mode.el")
+      (synopsis "Major Emacs mode for editing F* (FStar) code")
+      (description "This package provides an Emacs mode for editing F* (FStar)
+code.")
+      (license license:asl2.0))))
