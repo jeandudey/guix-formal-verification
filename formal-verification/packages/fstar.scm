@@ -118,7 +118,7 @@ compiler.")
 (define-public fstar
   (package
     (name "fstar")
-    (version "2024.01.13")
+    (version "2024.09.05")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -127,7 +127,7 @@ compiler.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18asgrwri2yc0ycs163y2j002fvp8hdb28gdkzf34ji6zw69cd66"))))
+                "1ckx08ap54lrx1fkiddgkhlj0m84bmqabr5fihhq8p7njdd3m869"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f
