@@ -1137,8 +1137,9 @@ Bedrock2 in Coq.")
                                  "global.c" "load_demo.c" "nest2.c" "nest3.c"
                                  "objectSelf.c" "objectSelfFancy.c"
                                  "objectSelfFancyOverriding.c" "ptr_compare.c"
-                                 "queue2.c" "store_demo.c" "structcopy.c"
-                                 "sumarray2.c" "switch.c" "union.c")))
+                                 "queue2.c" "reverse.c" "store_demo.c"
+                                 "structcopy.c" "sumarray2.c" "switch.c"
+                                 "union.c")))
 
                    (with-directory-excursion "progs64"
                      (for-each (lambda (file)
