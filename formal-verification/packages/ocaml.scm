@@ -9,7 +9,8 @@
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public ocaml-memtrace
   (package
@@ -135,7 +136,8 @@ object-oriented visitors for traversing and transforming data structures.")
                 "1nyfpylky6pi4c9nna5r31zrkccl1lynpzcm9d8nrn52icq3rsp5"))))
     (build-system ocaml-build-system)
     (arguments
-     (list #:phases
+     (list #:tests? (target-64bit?)
+           #:phases
            #~(modify-phases %standard-phases
                (delete 'configure)
                (add-before 'build 'change-directory
