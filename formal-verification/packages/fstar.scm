@@ -113,6 +113,11 @@ verified secure parsers from @acronym{DSL, Domain Specific Language} format
 specification languages.  It consists of LowParse, a verified combinator
 library, and QuackyDucky, an untrusted message format specification language
 compiler.")
+      ;; FIXME:
+      ;;
+      ;;  File "rfc_fstar_compiler.ml", line 136, characters 41-51:
+      ;;  136 |   | "uint32" | "uint32_le" -> 4, 4, Some 4294967295
+      (supported-systems %64bit-supported-systems)
       (license license:asl2.0))))
 
 (define-public fstar
