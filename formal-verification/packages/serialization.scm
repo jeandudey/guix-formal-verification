@@ -33,7 +33,9 @@
                 "037wx51nnygyb28dfzbf3hfzsbpbhvbqxljr6bc2d17vsdxclch1"))))
     (build-system dune-build-system)
     (arguments
-     (list #:phases
+     (list ; ldc does not compile for 32 bit.
+           #:tests? (target-64bit?)
+           #:phases
            #~(modify-phases %standard-phases
                ;; FIXME: Some tests are disabled due to missing dependencies.
                (add-after 'unpack 'delete-dune-files
@@ -45,14 +47,14 @@
                  (lambda _
                    (setenv "CC" #$(cc-for-target)))))))
     (native-inputs
-     (list ldc
-           ocaml-alcotest
-           ocaml-menhir
-           python-flake8
-           python-jsonschema
-           python-minimal
-           python-mypy
-           python-pytest))
+     (append (if (target-64bit?) (list ldc) '())
+             (list ocaml-alcotest
+                  ocaml-menhir
+                  python-flake8
+                  python-jsonschema
+                  python-minimal
+                  python-mypy
+                  python-pytest)))
     (propagated-inputs (list ocaml-biniou ocaml-yojson))
     (inputs (list ocaml-camlp-streams
                   ocaml-cmdliner
