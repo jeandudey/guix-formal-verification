@@ -1146,10 +1146,11 @@ Bedrock2 in Coq.")
                                  (invoke "clightgen" "-normalize" file))
                                '("append.c" "bin_search.c" "bst.c"
                                  "float.c" "field_loadstore.c" "global.c"
-                                 "logical_compare.c" "message.c" "min.c"
-                                 "min64.c" "nest2.c" "nest3.c" "object.c"
-                                 "revarray.c" "reverse.c" "strlib.c"
-                                 "sumarray.c" "switch.c" "union.c")))))
+                                 "incr.c" "logical_compare.c" "message.c"
+                                 "min.c" "min64.c" "nest2.c" "nest3.c"
+                                 "object.c" "revarray.c" "reverse.c"
+                                 "strlib.c" "sumarray.c" "switch.c"
+                                 "union.c")))))
                (delete 'configure))))
     (native-inputs (list coq))
     (propagated-inputs (list compcert-for-vst))
