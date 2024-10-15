@@ -234,4 +234,4 @@ using the Vale toolchain.")
       (synopsis "Extract F* programs to C")
       (description "KaRaMeL (formerly known as KReMLin) is a tool to extract
 F* code to readable C code.")
-      (license license:asl2.0))))
+      (license (list license:asl2.0 license:expat)))))
