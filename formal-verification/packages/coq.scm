@@ -78,6 +78,14 @@
     (synopsis "Language for low-level programming in Coq")
     (description "This package provides the definition of the Bedrock2
 language for low-level programming.")
+    ;; NOTE:
+    ;;
+    ;; Coq < Coq <
+    ;; Coq < Toplevel input, characters 25-35:
+    ;; > Local Set Printing Width 2147483647.
+    ;; >                          ^^^^^^^^^^
+    ;; Error: This number is too large.
+    (supported-systems %64bit-supported-systems)
     (license license:expat)))
 
 (define-public coq-bedrock2-compiler
