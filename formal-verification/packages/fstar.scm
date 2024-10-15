@@ -80,13 +80,12 @@
                      (install-file "bin/3d.exe" bin)
 
                      (copy-recursively "src/lowparse" fstar))))
-               ;(add-after 'install 'wrap-program
-               ;  (lambda _
-               ;    (wrap-program (string-append #$output "/bin/3d.exe")
-               ;      `("FSTAR_HOME" = (,#$(this-package-input "fstar")))
-               ;      `("KRML_HOME" = (,#$(this-package-input "karamel")))
-               ;      `("EVERPARSE_HOME" = (,#$output)))))
-               )))
+               (add-after 'install 'wrap-program
+                 (lambda _
+                   (wrap-program (string-append #$output "/bin/3d.exe")
+                     `("FSTAR_HOME" = (,#$(this-package-input "fstar")))
+                     `("KRML_HOME" = (,#$(this-package-input "karamel")))
+                     `("EVERPARSE_HOME" = (,#$output))))))))
     (native-inputs
      (list dune
            fstar
