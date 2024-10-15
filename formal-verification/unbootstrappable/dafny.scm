@@ -6,6 +6,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages tls)
   #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -56,13 +57,15 @@
                    (wrap-program (string-append #$output "/bin/dafny")
                     `("LD_LIBRARY_PATH" ":" prefix
                       ,(list (string-append #$(this-package-input "icu4c")
+                                            "/lib")
+                             (string-append #$(this-package-input "openssl")
                                             "/lib")))))))))
     (native-inputs (list unzip))
     (inputs
      (list `(,gcc "lib")
            glibc
-           icu4c))
-    ;(inputs (list dotnet))
+           icu4c
+           openssl))
     (home-page "https://dafny.org/")
     (synopsis "Dafny programming language")
     (description "Dafny is a verification-aware programming language,
