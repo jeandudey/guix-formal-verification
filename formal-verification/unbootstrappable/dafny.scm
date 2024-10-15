@@ -69,4 +69,5 @@
 supporting interactive verification of the program while it is being typed to
 flag any errors, show counter-examples, etc.  Dafny can compile to C#, Go,
 Python, Java or JavaScript.")
+    (supported-systems '("x86_64-linux"))
     (license license:expat)))

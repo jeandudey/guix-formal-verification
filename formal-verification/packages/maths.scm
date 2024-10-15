@@ -12,6 +12,9 @@
 ;; Remove once FStar supports latest Z3 releases.
 ;;
 ;; See: <https://github.com/FStarLang/FStar/issues/2431>.
+;;
+;;
+;; Also needed by Dafny.
 (define-public z3-4.8.5
   (package
     (inherit z3)
