@@ -535,19 +535,18 @@ proof procedures.")
     (native-inputs (list coq ocaml which))
     (propagated-inputs
      (list coq-mathcomp-2
-           coq-mathcomp-bigenough-2
-           coq-mathcomp-finmap-2))
+           coq-mathcomp-bigenough/mathcomp-2
+           coq-mathcomp-finmap/mathcomp-2))
     (home-page "https://github.com/math-comp/analysis")
     (synopsis "Real analysis library for Coq")
     (description "This library provides real analysis library for Coq, using
 the Mathematical Components library.")
     (license license:cecill-c)))
 
-;; FIXME: The upstream Guix version uses the version 1 of mathcomp.
-(define-public coq-mathcomp-bigenough-2
+(define-public coq-mathcomp-bigenough/mathcomp-2
   (package
     (inherit coq-mathcomp-bigenough)
-    (name "coq-mathcomp-bigenough-2")
+    (name "coq-mathcomp-bigenough-mathcomp-2")
     (version "1.0.1")
     (build-system gnu-build-system)
     (arguments
@@ -561,8 +560,7 @@ the Mathematical Components library.")
     (native-inputs (list coq ocaml))
     (propagated-inputs (list coq-mathcomp-2))))
 
-;; FIXME: Fails to build on 8.18 for some reason.
-(define-public coq-mathcomp-finmap-2
+(define-public coq-mathcomp-finmap/mathcomp-2
   (package
     (inherit coq-mathcomp-finmap)
     (name "coq-mathcomp-finmap")
