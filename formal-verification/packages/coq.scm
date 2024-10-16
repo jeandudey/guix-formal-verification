@@ -300,6 +300,16 @@ All that complexity is hidden behind a few concepts and a few declarative Coq
 commands.")
     (license license:expat)))
 
+(define-public coq-interval/mathcomp-2
+  (package
+    (inherit coq-interval)
+    (name "coq-interval-mathcomp-2")
+    (propagated-inputs
+     (list coq-bignums
+           coq-coquelicot/mathcomp-2
+           coq-flocq
+           coq-mathcomp-2))))
+
 (define-public coq-itree
   (package
     (name "coq-itree")
