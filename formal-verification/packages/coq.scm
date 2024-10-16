@@ -510,8 +510,6 @@ additive functions to leaves of ring/field expressions before applying the
 proof procedures.")
     (license license:cecill-b)))
 
-;; FIXME: Compilation of coq-mathcomp-finmap-2 fails to this one does not
-;; compile.
 (define-public coq-mathcomp-analysis
   (package
     (name "coq-mathcomp-analysis")
