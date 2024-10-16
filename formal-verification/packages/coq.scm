@@ -300,6 +300,45 @@ All that complexity is hidden behind a few concepts and a few declarative Coq
 commands.")
     (license license:expat)))
 
+(define-public coq-infotheo
+  ;; From `git describe --tags'.
+  (let ((revision "3")
+        (commit "5a1e1cb3b66adf7ad76db3a61be9eae0f70fa88c"))
+    (package
+      (name "coq-infotheo")
+      (version (git-version "0.7.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/affeldt-aist/infotheo")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1gmfmwj2ja83yl24b5ry64aygz8av5x8vvm8s9lhpv69nfriwb2d"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list #:make-flags
+             #~(list (string-append "COQLIBINSTALL=" #$output
+                                    "/lib/coq/user-contrib"))
+             #:tests? #f ;; No tests.
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure))))
+      (native-inputs (list coq ocaml which))
+      (propagated-inputs
+       (list coq-hierarchy-builder
+             coq-interval/mathcomp-2
+             coq-mathcomp-2
+             coq-mathcomp-algebra-tactics
+             coq-mathcomp-analysis))
+      (inputs (list ocaml-zarith)) ; Propagate in Coq.
+      (home-page "https://github.com/affeldt-aist/infotheo/")
+      (synopsis "Information theory and linear error correcting codes for Coq")
+      (description "This package provides a Coq library for reasoning about
+information theory,linear error correcting codes and discrete probabilities.")
+      (license license:lgpl2.1+))))
+
 (define-public coq-interval/mathcomp-2
   (package
     (inherit coq-interval)
