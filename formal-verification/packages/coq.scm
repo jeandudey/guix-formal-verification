@@ -588,7 +588,8 @@ the Mathematical Components library.")
            #~(modify-phases %standard-phases
                (delete 'configure))))
     (native-inputs (list coq ocaml))
-    (propagated-inputs (list coq-mathcomp-2))))
+    (propagated-inputs (list coq-mathcomp-2))
+    (inputs '())))
 
 (define-public coq-mathcomp-zify
   (package
