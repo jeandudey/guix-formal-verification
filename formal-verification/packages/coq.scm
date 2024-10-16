@@ -141,6 +141,13 @@ RISC-V, using Coq.")))
 de-serialization for Coq as an alternative to debug data structures.")
     (license license:expat)))
 
+(define-public coq-coquelicot/mathcomp-2
+  (package
+    (inherit coq-coquelicot)
+    (name "coq-coquelicot-mathcomp-2")
+    (propagated-inputs
+     (list coq-mathcomp-2))))
+
 ;; FIXME: Using this version because we are stuck with Coq 8.18 as Why3
 ;; doesn't support Coq 8.20 yet, also 2.x versions don't build with
 ;; Coq 8.18, so use 1.19.3 which is the latest one known to work.
