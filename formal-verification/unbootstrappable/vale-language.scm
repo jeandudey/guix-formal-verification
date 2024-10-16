@@ -8,7 +8,6 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  ;#:use-module (guix utils)
   #:use-module (nonguix build-system binary))
 
 ;; NOTE: There's already a vale package in GNU Guix, so just use vale-language
