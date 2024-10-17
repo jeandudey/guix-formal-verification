@@ -3,8 +3,11 @@
 
 (define-module (formal-verification tainted coq)
   #:use-module (formal-verification nonfree coq)
+  #:use-module (formal-verification packages coq)
   #:use-module (gnu packages coq)
+  #:use-module (gnu packages ocaml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system dune)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -217,3 +220,34 @@
     (description "This package provides the @acronym{VST, Verified Software
 Toolchain}, for proving the functional correctness of C programs.")
     (license license:bsd-2)))
+
+(define-public coq-wasm
+  (package
+    (name "coq-wasm")
+    (version "2.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/WasmCert/WasmCert-Coq")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14a56mrbqzj2fmngjdmy7mwysikl3cjs6xa2jfbi9sh5z276hm89"))))
+    (build-system dune-build-system)
+    (native-inputs
+     (list coq))
+    (propagated-inputs
+     (list coq-ext-lib
+           coq-mathcomp
+           coq-parseque
+           compcert-for-vst))
+    (inputs
+     (list ocaml-cmdliner
+           ocaml-linenoise
+           ocaml-mdx))
+    (home-page "https://github.com/WasmCert/WasmCert-Coq")
+    (synopsis "WebAssembly formalization in Coq")
+    (description "This package provides a Coq theory formalizing
+WebAssembly based on the official specification.")
+    (license license:expat)))
