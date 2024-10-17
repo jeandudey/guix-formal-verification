@@ -320,6 +320,37 @@ information theory,linear error correcting codes and discrete probabilities.")
            coq-flocq
            coq-mathcomp-2))))
 
+(define-public coq-iris
+  (package
+    (name "coq-iris")
+    (version "4.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.mpi-sws.org/iris/iris.git/")
+                     (commit (string-append "iris-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wr1jigzgl4fajl5jv4lanmb8nk4k6wdakakmxhfp5drxwhqgs0y"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (propagated-inputs (list coq-stdpp))
+    (home-page "https://github.com/DeepSpec/InteractionTrees")
+    (synopsis "Represent impure and recursive programs in Coq")
+    (description "This package provides a library allowing the representation
+of impure and recursive programs in Coq with equational reasoning.")
+    ;; Code is BSD-3 and documentation CC-BY 4.0
+    (license (list license:bsd-3 license:cc-by4.0))))
+
 (define-public coq-itree
   (package
     (name "coq-itree")
