@@ -753,6 +753,35 @@ in Coq.")
 for Coq.")
     (license license:expat)))
 
+(define-public coq-parseque
+  (package
+    (name "coq-parseque")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/coq-community/parseque")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1dmcdb9rx01n2wz7fdrxlb4qwk71s25fwzjn9m912nb3fvl5kidj"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib"))
+           #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
+    (native-inputs (list coq))
+    (home-page "https://github.com/coq-community/parseque")
+    (synopsis "Total parser combinator library for Coq")
+    (description "This package provides a total parser combinator library
+for Coq, based on the agdarsec library for Adga.")
+    (license license:expat)))
+
 (define-public coq-prime
   (package
     (name "coq-prime")
