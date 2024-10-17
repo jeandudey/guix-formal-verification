@@ -33,22 +33,27 @@
     (build-system binary-build-system)
     (arguments
      (list #:install-plan
-           #~'(("bin" #$(string-append "share/" name "-" version)))
+           #~'(("bin" #$(string-append "share/" name "-" version "/bin")))
 
            #:validate-runpath? #f
            #:phases
            #~(modify-phases %standard-phases
                (add-after 'install 'wrap-program
                  (lambda* (#:key inputs #:allow-other-keys)
+                   (define (wrap-program-mono name)
+                     (call-with-output-file (string-append #$output "/bin/" name)
+                       (lambda (port)
+                         (format port "#!~a~%exec ~s ~s \"$@\"~%"
+                                 (search-input-file inputs "bin/bash")
+                                 (search-input-file inputs "bin/mono")
+                                 (string-append #$output "/share/" #$name "-"
+                                                #$version "/bin/" name
+                                                ".exe"))
+                         (chmod (string-append #$output "/bin/" name) #o755))))
+
                    (mkdir-p (string-append #$output "/bin"))
-                   (call-with-output-file (string-append #$output "/bin/vale")
-                     (lambda (port)
-                       (format port "#!~a~%exec ~s ~s \"$@\"~%"
-                               (search-input-file inputs "bin/bash")
-                               (search-input-file inputs "bin/mono")
-                               (string-append #$output "/share/" #$name "-"
-                                              #$version "/vale.exe"))))
-                   (chmod (string-append #$output "/bin/vale") #o755))))))
+                   (wrap-program-mono "vale")
+                   (wrap-program-mono "importFStarTypes"))))))
     (native-inputs (list unzip))
     (inputs (list mono))
     (home-page "https://github.com/project-everest/vale")
