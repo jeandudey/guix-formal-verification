@@ -5,8 +5,10 @@
   #:use-module (formal-verification packages prolog)
   #:use-module (gnu packages base)
   #:use-module (gnu packages coq)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages python)
+  #:use-module (guix build-system dune)
   #:use-module (guix build-system gnu)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
@@ -951,6 +953,45 @@ generated using @code{hs-to-coq}, with manually written Coq code.")
     (synopsis "Gallina to Bedrock2 compiler in Coq")
     (description "This package provides a compiler to convert Gallina to
 Bedrock2 in Coq.")
+    (license license:expat)))
+
+(define-public coq-simple-io
+  (package
+    (name "coq-simple-io")
+    (version "1.10.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Lysxia/coq-simple-io")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v4hi8mf257bnmmfyajjzgh04d35ffnmrkdy0kb64cfipf203dzb"))))
+    (build-system dune-build-system)
+    (arguments
+     (list ;#:make-flags
+           ;#~(list (string-append "COQLIBINSTALL=" #$output
+           ;                       "/lib/coq/user-contrib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-after 'install 'install-symlink
+                 (lambda _
+                   (mkdir-p (string-append #$output "/lib/coq/user-contrib"))
+                   (symlink (string-append #$output
+                                           "/lib/ocaml/site-lib/coq"
+                                           "/user-contrib/SimpleIO/")
+                            (string-append #$output
+                                           "/lib/coq/user-contrib/SimpleIO")))))))
+    (native-inputs (list coq ocaml ocaml-cppo ocamlbuild))
+    (inputs (list gmp))
+    (propagated-inputs (list coq-ext-lib))
+    (home-page "https://github.com/Lysxia/coq-simple-io")
+    (synopsis "Library I/O programming in Coq")
+    (description "This package provides a Coq library to perform I/O in a
+style similar to Haskell.")
     (license license:expat)))
 
 (define-public coq-util
