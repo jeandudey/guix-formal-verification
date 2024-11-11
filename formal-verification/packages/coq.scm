@@ -17,6 +17,40 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match))
 
+(define-public coq-aac-tactics
+  (package
+    (name "coq-aac-tactics")
+    (version "8.18.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/coq-community/aac-tactics")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16l5a46f5cawsd8avsw3j4r8rpyhj6rbqifi7afv655jl3vbp5sn"))))
+    (build-system dune-build-system)
+    (arguments
+     (list #:tests? #f ;; No test suite.
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'install-symlink
+                 (lambda _
+                   (mkdir-p (string-append #$output "/lib/coq/user-contrib"))
+                   (symlink (string-append #$output
+                                           "/lib/ocaml/site-lib/coq"
+                                           "/user-contrib/AAC_tactics/")
+                            (string-append #$output
+                                           "/lib/coq/user-contrib/AAC_tactics")))))))
+    (native-inputs (list coq))
+    (home-page "https://coq-community.org/aac-tactics/")
+    (synopsis "Coq plugin providing tactics for rewriting")
+    (description "This package provides a Coq plugin with tactics for
+rewriting universally quantified equations, modulo associative (and
+possibly commutative) operators. ")
+    (license license:lgpl3+)))
+
 (define-public coq-bedrock2
   (package
     (name "coq-bedrock2")
