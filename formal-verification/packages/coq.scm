@@ -970,13 +970,9 @@ Bedrock2 in Coq.")
                 "1v4hi8mf257bnmmfyajjzgh04d35ffnmrkdy0kb64cfipf203dzb"))))
     (build-system dune-build-system)
     (arguments
-     (list ;#:make-flags
-           ;#~(list (string-append "COQLIBINSTALL=" #$output
-           ;                       "/lib/coq/user-contrib"))
-           #:tests? #f
+     (list #:tests? #f
            #:phases
            #~(modify-phases %standard-phases
-               (delete 'configure)
                (add-after 'install 'install-symlink
                  (lambda _
                    (mkdir-p (string-append #$output "/lib/coq/user-contrib"))
