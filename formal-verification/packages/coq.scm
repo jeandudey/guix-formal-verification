@@ -879,6 +879,43 @@ for Coq, based on the agdarsec library for Adga.")
     (description "This package provides a prime number library for Coq.")
     (license license:lgpl2.1)))
 
+(define-public coq-relation-algebra
+  (package
+    (name "coq-relation-algebra")
+    (version "1.7.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/damien-pous/relation-algebra")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "001p60kh0ppdmvhmy3il5hvhnkn5qinzdlv4hckwpcdbwvhwrhv9"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:configure-flags #~'("--enable-ssr" "--enable-aac")
+           #:make-flags
+           #~(list (string-append "COQLIBINSTALL=" #$output
+                                  "/lib/coq/user-contrib")
+                   (string-append "COQPLUGININSTALL=" #$output
+                                  "/lib/ocaml/site-lib"))
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'configure
+                 (lambda* (#:key configure-flags #:allow-other-keys)
+                   (apply invoke "bash" "./configure" configure-flags))))))
+    (native-inputs (list ocaml coq))
+    (propagated-inputs (list coq-aac-tactics coq-mathcomp-2))
+    (home-page "https://github.com/damien-pous/relation-algebra")
+    (synopsis "Relation algebra for Coq")
+    (description "This package provides a modular library about relation
+algebra: those algebras admitting heterogeneous binary relations as a
+model, ranging from partially ordered monoid to residuated Kleene allegories
+and @acronym{KAT, Kleene Algebra with Tests}.")
+    (license license:lgpl3+)))
+
 (define-public coq-rewriter
   (package
     (name "coq-rewriter")
