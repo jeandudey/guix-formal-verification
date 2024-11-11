@@ -235,6 +235,17 @@ Toolchain}, for proving the functional correctness of C programs.")
                (base32
                 "14a56mrbqzj2fmngjdmy7mwysikl3cjs6xa2jfbi9sh5z276hm89"))))
     (build-system dune-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'install-symlink
+                          (lambda _
+                            (mkdir-p (string-append #$output "/lib/coq/user-contrib"))
+                            (symlink (string-append #$output
+                                                    "/lib/ocaml/site-lib/coq"
+                                                    "/user-contrib/Wasm/")
+                                     (string-append #$output
+                                                    "/lib/coq/user-contrib/Wasm")))))))
     (native-inputs
      (list coq))
     (propagated-inputs
