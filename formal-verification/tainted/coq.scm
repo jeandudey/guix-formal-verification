@@ -215,6 +215,9 @@
                (delete 'configure))))
     (native-inputs (list coq))
     (propagated-inputs (list compcert-for-vst))
+    (properties
+     '((timeout . 84000)
+       (max-silent-time . 84000)))
     (home-page "https://vst.cs.princeton.edu/")
     (synopsis "Toolset for proving functional correctness of C programs")
     (description "This package provides the @acronym{VST, Verified Software
