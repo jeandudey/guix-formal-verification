@@ -2,8 +2,8 @@
 ;;; SPDX-License-Identifier: GPL-3.0-or-later
 
 (define-module (formal-verification unbootstrappable vale-language)
-  #:use-module (formal-verification unbootstrappable dotnet)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages dotnet)
   #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -55,7 +55,7 @@
                    (wrap-program-mono "vale")
                    (wrap-program-mono "importFStarTypes"))))))
     (native-inputs (list unzip))
-    (inputs (list mono))
+    (inputs (list mono-6.12.0))
     (home-page "https://github.com/project-everest/vale")
     (synopsis "@acronym{VALE, Verified Assembly Language for Everest}")
     (description "This package provides @acronym{VALE, Verified Assembly
