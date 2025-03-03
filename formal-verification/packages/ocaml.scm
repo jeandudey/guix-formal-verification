@@ -12,6 +12,27 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public ocaml-easy-logging
+  (package
+    (name "ocaml-easy-logging")
+    (version "0.8.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sapristi/easy_logging")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jh5ifn4a4n4g1abkv3l8mjbgngz383fq91s1ny65bzvwxyr2bjz"))))
+    (build-system dune-build-system)
+    (propagated-inputs (list ocaml-calendar))
+    (inputs (list ocaml-ppx-deriving-yojson))
+    (home-page "https://github.com/sapristi/easy_logging")
+    (synopsis "Logging module for OCaml")
+    (description "This package provides a logging module for OCaml.")
+    (license license:mpl2.0)))
+
 (define-public ocaml-memtrace
   (package
     (name "ocaml-memtrace")
