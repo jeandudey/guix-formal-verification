@@ -13,10 +13,7 @@
 ;; NOTE: There's already a vale package in GNU Guix, so just use vale-language
 ;; to differentiate.
 ;;
-;; Can't be bootstrapped because there's no .NET is not
-;; bootstrappable.
-;;
-;; We should also try to build from source though, same rationale as Dafny.
+;; We should try to build from source, same rationale as Dafny.
 (define-public vale-language
   (package
     (name "vale-language")
